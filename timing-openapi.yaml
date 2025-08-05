@@ -1,0 +1,1969 @@
+openapi: 3.0.3
+info:
+  title: 'API Reference'
+  description: ''
+  version: 1.0.0
+servers:
+  -
+    url: 'https://web.timingapp.com'
+tags:
+  -
+    name: Projects
+    description: ''
+  -
+    name: Reports
+    description: ''
+  -
+    name: Teams
+    description: ''
+  -
+    name: 'Time Entries'
+    description: ''
+components:
+  securitySchemes:
+    default:
+      type: http
+      scheme: bearer
+      description: 'You can retrieve your token by visiting your dashboard and clicking <b>Generate API token</b>.'
+security:
+  -
+    default: []
+paths:
+  /api/v1/projects/hierarchy:
+    get:
+      summary: 'List projects hierarchically.'
+      operationId: listProjectsHierarchically
+      description: "<br>Return the complete project hierarchy.\n\nSee [Display the specified project.](#projects-GETapi-v1-projects--project_id-) for the returned attributes."
+      parameters:
+        -
+          in: query
+          name: team_id
+          description: "The ID of the team to list projects for. Can be omitted to list the user's private projects. See [Return a list containing all the teams you are a member of.](#teams-GETapi-v1-teams) for obtaining a team ID to provide here."
+          example: null
+          required: false
+          schema:
+            type: string
+            description: "The ID of the team to list projects for. Can be omitted to list the user's private projects. See [Return a list containing all the teams you are a member of.](#teams-GETapi-v1-teams) for obtaining a team ID to provide here."
+            example: null
+            nullable: false
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  data:
+                    -
+                      self: /projects/1
+                      team_id: null
+                      title: 'Project at root level'
+                      title_chain:
+                        - 'Project at root level'
+                      color: '#FF0000'
+                      productivity_score: 1
+                      is_archived: false
+                      notes: null
+                      children:
+                        -
+                          self: /projects/2
+                          team_id: null
+                          title: 'Unproductive child project'
+                          title_chain:
+                            - 'Project at root level'
+                            - 'Unproductive child project'
+                          color: '#00FF00'
+                          productivity_score: -1
+                          is_archived: false
+                          notes: null
+                          children: []
+                          parent:
+                            self: /projects/1
+                          custom_fields: {  }
+                      parent: null
+                      custom_fields: {  }
+                properties:
+                  data:
+                    type: array
+                    example:
+                      -
+                        self: /projects/1
+                        team_id: null
+                        title: 'Project at root level'
+                        title_chain:
+                          - 'Project at root level'
+                        color: '#FF0000'
+                        productivity_score: 1
+                        is_archived: false
+                        notes: null
+                        children:
+                          -
+                            self: /projects/2
+                            team_id: null
+                            title: 'Unproductive child project'
+                            title_chain:
+                              - 'Project at root level'
+                              - 'Unproductive child project'
+                            color: '#00FF00'
+                            productivity_score: -1
+                            is_archived: false
+                            notes: null
+                            children: []
+                            parent:
+                              self: /projects/1
+                            custom_fields: []
+                        parent: null
+                        custom_fields: []
+                    items:
+                      type: object
+                      properties:
+                        self:
+                          type: string
+                          example: /projects/1
+                        team_id:
+                          type: string
+                          example: null
+                        title:
+                          type: string
+                          example: 'Project at root level'
+                        title_chain:
+                          type: array
+                          example:
+                            - 'Project at root level'
+                          items:
+                            type: string
+                        color:
+                          type: string
+                          example: '#FF0000'
+                        productivity_score:
+                          type: integer
+                          example: 1
+                        is_archived:
+                          type: boolean
+                          example: false
+                        notes:
+                          type: string
+                          example: null
+                        children:
+                          type: array
+                          example:
+                            -
+                              self: /projects/2
+                              team_id: null
+                              title: 'Unproductive child project'
+                              title_chain:
+                                - 'Project at root level'
+                                - 'Unproductive child project'
+                              color: '#00FF00'
+                              productivity_score: -1
+                              is_archived: false
+                              notes: null
+                              children: []
+                              parent:
+                                self: /projects/1
+                              custom_fields: []
+                          items:
+                            type: object
+                            properties:
+                              self:
+                                type: string
+                                example: /projects/2
+                              team_id:
+                                type: string
+                                example: null
+                              title:
+                                type: string
+                                example: 'Unproductive child project'
+                              title_chain:
+                                type: array
+                                example:
+                                  - 'Project at root level'
+                                  - 'Unproductive child project'
+                                items:
+                                  type: string
+                              color:
+                                type: string
+                                example: '#00FF00'
+                              productivity_score:
+                                type: integer
+                                example: -1
+                              is_archived:
+                                type: boolean
+                                example: false
+                              notes:
+                                type: string
+                                example: null
+                              children:
+                                type: array
+                                example: []
+                              parent:
+                                type: object
+                                properties:
+                                  self:
+                                    type: string
+                                    example: /projects/1
+                              custom_fields:
+                                type: object
+                                properties: {  }
+                        parent:
+                          type: string
+                          example: null
+                        custom_fields:
+                          type: object
+                          properties: {  }
+      tags:
+        - Projects
+  /api/v1/projects:
+    get:
+      summary: 'List projects.'
+      operationId: listProjects
+      description: "<br>Return a list containing all projects.\n\nSee [Display the specified project.](#projects-GETapi-v1-projects--project_id-) for the returned attributes."
+      parameters:
+        -
+          in: query
+          name: title
+          description: 'Filter for projects whose title contains all words in this parameter. The search is case-insensitive but diacritic-sensitive.'
+          example: root
+          required: false
+          schema:
+            type: string
+            description: 'Filter for projects whose title contains all words in this parameter. The search is case-insensitive but diacritic-sensitive.'
+            example: root
+            nullable: false
+        -
+          in: query
+          name: hide_archived
+          description: 'If set to `1`, archived projects and their children will not be included in the result.'
+          example: '1'
+          required: false
+          schema:
+            type: boolean
+            description: 'If set to `1`, archived projects and their children will not be included in the result.'
+            example: '1'
+            nullable: false
+        -
+          in: query
+          name: team_id
+          description: "The ID of the team to list projects for. Can be omitted to list the user's private projects. See [Return a list containing all the teams you are a member of.](#teams-GETapi-v1-teams) for obtaining a team ID to provide here."
+          example: null
+          required: false
+          schema:
+            type: string
+            description: "The ID of the team to list projects for. Can be omitted to list the user's private projects. See [Return a list containing all the teams you are a member of.](#teams-GETapi-v1-teams) for obtaining a team ID to provide here."
+            example: null
+            nullable: false
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  data:
+                    -
+                      self: /projects/1
+                      team_id: null
+                      title: 'Project at root level'
+                      title_chain:
+                        - 'Project at root level'
+                      color: '#FF0000'
+                      productivity_score: 1
+                      is_archived: false
+                      notes: null
+                      children:
+                        -
+                          self: /projects/2
+                      parent: null
+                      custom_fields: {  }
+                properties:
+                  data:
+                    type: array
+                    example:
+                      -
+                        self: /projects/1
+                        team_id: null
+                        title: 'Project at root level'
+                        title_chain:
+                          - 'Project at root level'
+                        color: '#FF0000'
+                        productivity_score: 1
+                        is_archived: false
+                        notes: null
+                        children:
+                          -
+                            self: /projects/2
+                        parent: null
+                        custom_fields: []
+                    items:
+                      type: object
+                      properties:
+                        self:
+                          type: string
+                          example: /projects/1
+                        team_id:
+                          type: string
+                          example: null
+                        title:
+                          type: string
+                          example: 'Project at root level'
+                        title_chain:
+                          type: array
+                          example:
+                            - 'Project at root level'
+                          items:
+                            type: string
+                        color:
+                          type: string
+                          example: '#FF0000'
+                        productivity_score:
+                          type: integer
+                          example: 1
+                        is_archived:
+                          type: boolean
+                          example: false
+                        notes:
+                          type: string
+                          example: null
+                        children:
+                          type: array
+                          example:
+                            -
+                              self: /projects/2
+                          items:
+                            type: object
+                            properties:
+                              self:
+                                type: string
+                                example: /projects/2
+                        parent:
+                          type: string
+                          example: null
+                        custom_fields:
+                          type: object
+                          properties: {  }
+      tags:
+        - Projects
+    post:
+      summary: 'Create project.'
+      operationId: createProject
+      description: "<br>Create a new project.\n\nSee [Display the specified project.](#projects-GETapi-v1-projects--project_id-) for the returned attributes.\n\n<aside class=\"notice\">\nIf you would like to add rules to a project, please <a href=\"https://timingapp.com/contact\" target=\"_blank\" >contact us</a> for advice.\n</aside>"
+      parameters: []
+      responses:
+        201:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  data:
+                    self: /projects/2
+                    team_id: null
+                    title: 'Acme Inc.'
+                    title_chain:
+                      - 'Project at root level'
+                      - 'Acme Inc.'
+                    color: '#FF0000'
+                    productivity_score: 1
+                    is_archived: false
+                    notes: 'Some more detailed notes'
+                    children: []
+                    parent:
+                      self: /projects/1
+                    custom_fields:
+                      field_name: field_value
+                  links:
+                    time-entries: 'https://web.timingapp.com/api/v1/time-entries?project[]=/projects/2'
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      self:
+                        type: string
+                        example: /projects/2
+                      team_id:
+                        type: string
+                        example: null
+                      title:
+                        type: string
+                        example: 'Acme Inc.'
+                      title_chain:
+                        type: array
+                        example:
+                          - 'Project at root level'
+                          - 'Acme Inc.'
+                        items:
+                          type: string
+                      color:
+                        type: string
+                        example: '#FF0000'
+                      productivity_score:
+                        type: integer
+                        example: 1
+                      is_archived:
+                        type: boolean
+                        example: false
+                      notes:
+                        type: string
+                        example: 'Some more detailed notes'
+                      children:
+                        type: array
+                        example: []
+                      parent:
+                        type: object
+                        properties:
+                          self:
+                            type: string
+                            example: /projects/1
+                      custom_fields:
+                        type: object
+                        properties:
+                          field_name:
+                            type: string
+                            example: field_value
+                  links:
+                    type: object
+                    properties:
+                      time-entries:
+                        type: string
+                        example: 'https://web.timingapp.com/api/v1/time-entries?project[]=/projects/2'
+      tags:
+        - Projects
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  description: "The project's title."
+                  example: 'Acme Inc.'
+                  nullable: false
+                parent:
+                  type: string
+                  description: 'A reference to an existing project. The new project will be appended to the parent''s children. Can be a project reference in the form `"/projects/1"`, a project title (e.g. `"Project at root level"`), or an array with the project''s entire title chain (e.g. `["Project at root level", "Unproductive child project"]`).'
+                  example: /projects/1
+                  nullable: true
+                color:
+                  type: string
+                  description: "The project's color, in hexadecimal format (`#RRGGBB`). If omitted, a color with random hue, 70% saturation and 100% value will be used."
+                  example: '#FF0000'
+                  nullable: true
+                productivity_score:
+                  type: number
+                  description: "The project's productivity rating, between -1 (very unproductive) and 1 (very productive). Defaults to 1."
+                  example: 1.0
+                  nullable: true
+                is_archived:
+                  type: boolean
+                  description: 'Whether the project has been archived. Defaults to false.'
+                  example: false
+                  nullable: true
+                team_id:
+                  type: string
+                  description: 'The ID of the team to add the project to. See [Return a list containing all the teams you are a member of.](#teams-GETapi-v1-teams) for obtaining a team ID to provide here.'
+                  example: null
+                  nullable: true
+                notes:
+                  type: string
+                  description: "The project's notes."
+                  example: 'Some more detailed notes'
+                  nullable: true
+                custom_fields:
+                  type: object
+                  description: 'A list of custom field name/value pairs to store. For more details, see [Custom fields](#custom-fields).'
+                  example:
+                    field_name: field_value
+                  nullable: true
+                  properties: {  }
+              required:
+                - title
+  '/api/v1/projects/{project_id}':
+    get:
+      summary: 'Show project.'
+      operationId: showProject
+      description: "<br>Display the specified project.\n\nThe following attributes will be returned:\n\n - `self`: A reference to the entity itself, relative to the API root.\n - `title`: The project's title.\n - `title_chain`: An array containing the title of the project and all its ancestors. Example: `[\"Parent\", \"Child\"]`\n - `color`: The project's color, in hexadecimal format (`#RRGGBB`). Example: `#FF0000`\n - `productivity_score`: The project's productivity rating, between -1 (very unproductive) and 1 (very productive). Example: `1`\n - `is_archived`: Whether the project has been archived. Defaults to false. Example: `false`\n - `parent`: A reference to the enclosing project.\n - `children`: The project's children.\n - `team_id`: The ID of the team that this project belongs to, if applicable.\n\n<aside class=\"notice\">\nChild projects are provided as references; i.e. they only contain the <code>self</code> attribute.\n</aside>"
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  data:
+                    self: /projects/1
+                    team_id: null
+                    title: 'Project at root level'
+                    title_chain:
+                      - 'Project at root level'
+                    color: '#FF0000'
+                    productivity_score: 1
+                    is_archived: false
+                    notes: null
+                    children:
+                      -
+                        self: /projects/2
+                    parent: null
+                    custom_fields: {  }
+                  links:
+                    time-entries: 'https://web.timingapp.com/api/v1/time-entries?project[]=/projects/1'
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      self:
+                        type: string
+                        example: /projects/1
+                      team_id:
+                        type: string
+                        example: null
+                      title:
+                        type: string
+                        example: 'Project at root level'
+                      title_chain:
+                        type: array
+                        example:
+                          - 'Project at root level'
+                        items:
+                          type: string
+                      color:
+                        type: string
+                        example: '#FF0000'
+                      productivity_score:
+                        type: integer
+                        example: 1
+                      is_archived:
+                        type: boolean
+                        example: false
+                      notes:
+                        type: string
+                        example: null
+                      children:
+                        type: array
+                        example:
+                          -
+                            self: /projects/2
+                        items:
+                          type: object
+                          properties:
+                            self:
+                              type: string
+                              example: /projects/2
+                      parent:
+                        type: string
+                        example: null
+                      custom_fields:
+                        type: object
+                        properties: {  }
+                  links:
+                    type: object
+                    properties:
+                      time-entries:
+                        type: string
+                        example: 'https://web.timingapp.com/api/v1/time-entries?project[]=/projects/1'
+      tags:
+        - Projects
+    put:
+      summary: 'Update project.'
+      operationId: updateProject
+      description: "<br>Update the specified project.\n\nSee [Display the specified project.](#projects-GETapi-v1-projects--project_id-) for the returned attributes.\n\n<aside class=\"notice\">\nOmitted fields will not be updated, even when using the `PUT` method.\n</aside>\n\n<aside class=\"notice\">\nChanging a project's parent or children is currently not possible.\n</aside>\n\n<aside class=\"notice\">\nIf you would like to add rules to a project, please <a href=\"https://timingapp.com/contact\" target=\"_blank\" >contact us</a> for advice.\n</aside>"
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  data:
+                    self: /projects/1
+                    team_id: null
+                    title: 'Acme Inc.'
+                    title_chain:
+                      - 'Acme Inc.'
+                    color: '#FF0000'
+                    productivity_score: 1
+                    is_archived: false
+                    notes: 'Some more detailed notes'
+                    children:
+                      -
+                        self: /projects/2
+                    parent: null
+                    custom_fields:
+                      field_name: field_value
+                  links:
+                    time-entries: 'https://web.timingapp.com/api/v1/time-entries?project[]=/projects/1'
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      self:
+                        type: string
+                        example: /projects/1
+                      team_id:
+                        type: string
+                        example: null
+                      title:
+                        type: string
+                        example: 'Acme Inc.'
+                      title_chain:
+                        type: array
+                        example:
+                          - 'Acme Inc.'
+                        items:
+                          type: string
+                      color:
+                        type: string
+                        example: '#FF0000'
+                      productivity_score:
+                        type: integer
+                        example: 1
+                      is_archived:
+                        type: boolean
+                        example: false
+                      notes:
+                        type: string
+                        example: 'Some more detailed notes'
+                      children:
+                        type: array
+                        example:
+                          -
+                            self: /projects/2
+                        items:
+                          type: object
+                          properties:
+                            self:
+                              type: string
+                              example: /projects/2
+                      parent:
+                        type: string
+                        example: null
+                      custom_fields:
+                        type: object
+                        properties:
+                          field_name:
+                            type: string
+                            example: field_value
+                  links:
+                    type: object
+                    properties:
+                      time-entries:
+                        type: string
+                        example: 'https://web.timingapp.com/api/v1/time-entries?project[]=/projects/1'
+      tags:
+        - Projects
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  description: "The project's title."
+                  example: 'Acme Inc.'
+                  nullable: false
+                color:
+                  type: string
+                  description: "The project's color, in hexadecimal format (`#RRGGBB`)."
+                  example: '#FF0000'
+                  nullable: false
+                productivity_score:
+                  type: number
+                  description: "The project's productivity rating, between -1 (very unproductive) and 1 (very productive)."
+                  example: 1.0
+                  nullable: false
+                is_archived:
+                  type: boolean
+                  description: 'Whether the project has been archived.'
+                  example: false
+                  nullable: true
+                notes:
+                  type: string
+                  description: "The project's notes."
+                  example: 'Some more detailed notes'
+                  nullable: true
+                custom_fields:
+                  type: object
+                  description: 'A list of custom field name/value pairs to update. For more details, see [Custom fields](#custom-fields).'
+                  example:
+                    field_name: field_value
+                  nullable: true
+                  properties: {  }
+              required:
+                - title
+    delete:
+      summary: 'Delete project.'
+      operationId: deleteProject
+      description: '<br>Delete the specified project and all of its children.'
+      parameters: []
+      responses:
+        204:
+          description: ''
+      tags:
+        - Projects
+    parameters:
+      -
+        in: path
+        name: project_id
+        description: 'The ID of the project to display.'
+        example: '1'
+        required: true
+        schema:
+          type: string
+  /api/v1/report:
+    get:
+      summary: 'Generate report.'
+      operationId: generateReport
+      description: "<br>Generate a report that can contain both time entries and app usage.\n\nReturns a JSON array with several rows; each row includes the total duration (in seconds) belonging to the\ncorresponding other (configurable) columns.\n\nThe `include_app_usage` and `include_team_members` parameters govern whether to include app usage (otherwise, only time entries are returned) as well as data for other team members.\n<br>The `start_date_min`, `start_date_max`, `projects`(also see `include_child_projects`) and `search_query` parameters allow filtering the returned data.\n<br>The `columns`, `project_grouping_level`, `include_project_data`, `timespan_grouping_mode`, and `sort` parameters govern the presentation of the returned data.\n\n<aside class=\"notice\">\nFetching large amounts of app usage can put a substantial amount of load on our servers, so please be mindful before frequently requesting large amounts of data using this API.\n</aside>\n\n<aside class=\"notice\">\nIf no date range filter is provided by setting <em>both</em> `start_date_min` <em>and</em> `start_date_max`,\nthis query returns all time entries between midnight (UTC) 30 days ago and end of day (UTC) today.\n</aside>"
+      parameters:
+        -
+          in: query
+          name: include_app_usage
+          description: 'Whether to include app usage in the report. If false, only time entries are returned. Default: `0`'
+          example: '0'
+          required: false
+          schema:
+            type: boolean
+            description: 'Whether to include app usage in the report. If false, only time entries are returned. Default: `0`'
+            example: '0'
+            nullable: false
+        -
+          in: query
+          name: include_team_members
+          description: 'If true, the response will also contain time entries that belong to other team members, provided the current user has permission to view them. Default: `0`'
+          example: '0'
+          required: false
+          schema:
+            type: boolean
+            description: 'If true, the response will also contain time entries that belong to other team members, provided the current user has permission to view them. Default: `0`'
+            example: '0'
+            nullable: false
+        -
+          in: query
+          name: team_members
+          description: 'Restricts the query to data associated with the given user. Can be repeated to include time entries from several users.'
+          example:
+            - /users/1
+          required: false
+          schema:
+            type: array
+            description: 'Restricts the query to data associated with the given user. Can be repeated to include time entries from several users.'
+            example:
+              - /users/1
+            items:
+              type: string
+        -
+          in: query
+          name: start_date_min
+          description: 'Restricts the query to data whose start date is equal to or later than this parameter.'
+          example: '2019-01-01'
+          required: false
+          schema:
+            type: string
+            description: 'Restricts the query to data whose start date is equal to or later than this parameter.'
+            example: '2019-01-01'
+            nullable: false
+        -
+          in: query
+          name: start_date_max
+          description: 'Restricts the query to data whose start date is equal to or earlier than this parameter.'
+          example: '2019-01-01'
+          required: false
+          schema:
+            type: string
+            description: 'Restricts the query to data whose start date is equal to or earlier than this parameter.'
+            example: '2019-01-01'
+            nullable: false
+        -
+          in: query
+          name: projects
+          description: 'Restricts the query to data associated with the given project. Can be repeated to include time entries from several projects. If you would like to include time entries that are not assigned to any project, you can provide an empty string, i.e. `projects[]=`'
+          example:
+            - /projects/1
+          required: false
+          schema:
+            type: array
+            description: 'Restricts the query to data associated with the given project. Can be repeated to include time entries from several projects. If you would like to include time entries that are not assigned to any project, you can provide an empty string, i.e. `projects[]=`'
+            example:
+              - /projects/1
+            items:
+              type: string
+        -
+          in: query
+          name: include_child_projects
+          description: 'If true, the response will also contain time entries that belong to any child projects of the ones provided in `projects[]`. Default: `0`'
+          example: '1'
+          required: false
+          schema:
+            type: boolean
+            description: 'If true, the response will also contain time entries that belong to any child projects of the ones provided in `projects[]`. Default: `0`'
+            example: '1'
+            nullable: false
+        -
+          in: query
+          name: search_query
+          description: 'Restricts the query to time entries whose title and/or notes contain all words in this parameter. The search is case-insensitive but diacritic-sensitive. Note: this parameter can not be used when app usage is included.'
+          example: meeting
+          required: false
+          schema:
+            type: string
+            description: 'Restricts the query to time entries whose title and/or notes contain all words in this parameter. The search is case-insensitive but diacritic-sensitive. Note: this parameter can not be used when app usage is included.'
+            example: meeting
+            nullable: false
+        -
+          in: query
+          name: columns
+          description: 'Which columns to show. Can be repeated to provide multiple columns. The `user` column is ignored if `include_team_members` is false. Possible values: `project`, `title`, `notes`, `timespan`, `user`. Default: `user`, `project`, `title`. `start_date` and `end_date` is shown when `timespan` column is sent.'
+          example:
+            - project
+          required: false
+          schema:
+            type: array
+            description: 'Which columns to show. Can be repeated to provide multiple columns. The `user` column is ignored if `include_team_members` is false. Possible values: `project`, `title`, `notes`, `timespan`, `user`. Default: `user`, `project`, `title`. `start_date` and `end_date` is shown when `timespan` column is sent.'
+            example:
+              - project
+            items:
+              type: string
+        -
+          in: query
+          name: project_grouping_level
+          description: 'When this argument is provided, report lines for projects below the given level will be aggregated by their parent project on the given level. For example, when `project_grouping_level` is 0, all times in sub-projects will be counted towards the corresponding project on the "root" (i.e. highest) level in the project tree. Can be a non-negative integer or -1. The default is -1, which indicates no grouping (i.e. all projects will be returned, regardless of how deep they are in the hierarchy). Requires `columns[]` to contain `project`.'
+          example: '0'
+          required: false
+          schema:
+            type: integer
+            description: 'When this argument is provided, report lines for projects below the given level will be aggregated by their parent project on the given level. For example, when `project_grouping_level` is 0, all times in sub-projects will be counted towards the corresponding project on the "root" (i.e. highest) level in the project tree. Can be a non-negative integer or -1. The default is -1, which indicates no grouping (i.e. all projects will be returned, regardless of how deep they are in the hierarchy). Requires `columns[]` to contain `project`.'
+            example: '0'
+            nullable: false
+        -
+          in: query
+          name: include_project_data
+          description: "If true, the properties of each line's project will be included in the response. Requires `columns[]` to contain `project`. Default: `0`"
+          example: '1'
+          required: false
+          schema:
+            type: boolean
+            description: "If true, the properties of each line's project will be included in the response. Requires `columns[]` to contain `project`. Default: `0`"
+            example: '1'
+            nullable: false
+        -
+          in: query
+          name: timespan_grouping_mode
+          description: 'When this argument is provided, report lines will be aggregated according to the given calendar unit. Possible values: `exact`, `day`, `week`, `month`, `year`. Default: `exact`'
+          example: day
+          required: false
+          schema:
+            type: string
+            description: 'When this argument is provided, report lines will be aggregated according to the given calendar unit. Possible values: `exact`, `day`, `week`, `month`, `year`. Default: `exact`'
+            example: day
+            nullable: false
+        -
+          in: query
+          name: sort
+          description: 'Sort the results ascending by the given column; for descending order prefix the column name with a minus sign. Can be repeated to provide multiple sort columns. Default: `-duration`. Examples: `sort[]=-duration` -> Sort descending by duration. `sort[]=user&sort[]=-duration` -> Sort ascending by user, then descending by duration.'
+          example:
+            - '-duration'
+          required: false
+          schema:
+            type: array
+            description: 'Sort the results ascending by the given column; for descending order prefix the column name with a minus sign. Can be repeated to provide multiple sort columns. Default: `-duration`. Examples: `sort[]=-duration` -> Sort descending by duration. `sort[]=user&sort[]=-duration` -> Sort ascending by user, then descending by duration.'
+            example:
+              - '-duration'
+            items:
+              type: string
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  data:
+                    -
+                      duration: 3600
+                      project:
+                        self: /projects/1
+                        team_id: null
+                        title: 'Project at root level'
+                        title_chain:
+                          - 'Project at root level'
+                        color: '#FF0000'
+                        productivity_score: 1
+                        is_archived: false
+                        notes: null
+                        parent: null
+                        custom_fields: {  }
+                properties:
+                  data:
+                    type: array
+                    example:
+                      -
+                        duration: 3600
+                        project:
+                          self: /projects/1
+                          team_id: null
+                          title: 'Project at root level'
+                          title_chain:
+                            - 'Project at root level'
+                          color: '#FF0000'
+                          productivity_score: 1
+                          is_archived: false
+                          notes: null
+                          parent: null
+                          custom_fields: []
+                    items:
+                      type: object
+                      properties:
+                        duration:
+                          type: integer
+                          example: 3600
+                        project:
+                          type: object
+                          properties:
+                            self:
+                              type: string
+                              example: /projects/1
+                            team_id:
+                              type: string
+                              example: null
+                            title:
+                              type: string
+                              example: 'Project at root level'
+                            title_chain:
+                              type: array
+                              example:
+                                - 'Project at root level'
+                              items:
+                                type: string
+                            color:
+                              type: string
+                              example: '#FF0000'
+                            productivity_score:
+                              type: integer
+                              example: 1
+                            is_archived:
+                              type: boolean
+                              example: false
+                            notes:
+                              type: string
+                              example: null
+                            parent:
+                              type: string
+                              example: null
+                            custom_fields:
+                              type: object
+                              properties: {  }
+      tags:
+        - Reports
+  '/api/v1/teams/{team_id}/members':
+    get:
+      summary: 'List team members.'
+      operationId: listTeamMembers
+      description: "<br>Return a list containing all active members of the given team.\n\nMembers with pending invitations will be excluded.\n\nThe following attributes will be returned:\n\n - `self`: A reference to the entity itself, relative to the API root.\n - `email`: The team member's email address.\n - `name`: The team member's name. May be null if the team member has not entered a name in their account profile."
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  data:
+                    -
+                      self: /users/1
+                      email: johnny@appleseed.net
+                      name: 'Johnny Appleseed'
+                properties:
+                  data:
+                    type: array
+                    example:
+                      -
+                        self: /users/1
+                        email: johnny@appleseed.net
+                        name: 'Johnny Appleseed'
+                    items:
+                      type: object
+                      properties:
+                        self:
+                          type: string
+                          example: /users/1
+                        email:
+                          type: string
+                          example: johnny@appleseed.net
+                        name:
+                          type: string
+                          example: 'Johnny Appleseed'
+      tags:
+        - Teams
+    parameters:
+      -
+        in: path
+        name: team_id
+        description: 'The ID of the team to list members for.'
+        example: '1'
+        required: true
+        schema:
+          type: string
+  /api/v1/teams:
+    get:
+      summary: 'List teams.'
+      operationId: listTeams
+      description: '<br>Return a list containing all the teams you are a member of.'
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  data:
+                    -
+                      id: /teams/1
+                      name: 'Demo Team'
+                properties:
+                  data:
+                    type: array
+                    example:
+                      -
+                        id: /teams/1
+                        name: 'Demo Team'
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          example: /teams/1
+                        name:
+                          type: string
+                          example: 'Demo Team'
+      tags:
+        - Teams
+  /api/v1/time-entries/start:
+    post:
+      summary: 'Start timer.'
+      operationId: startTimer
+      description: "<br>Start a new timer.\n\nThis also stops the currently running timer if there is one.\n\nSee [Display the specified time entry.](#time-entries-GETapi-v1-time-entries--time_entry_id-) for the returned attributes.\n\n<aside class=\"notice\">\nThe title and project fields can not both be empty.\n</aside>"
+      parameters: []
+      responses:
+        201:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  data:
+                    self: /time-entries/2
+                    start_date: '2019-01-01T00:00:00.000000+00:00'
+                    end_date: '2019-01-01T00:00:00.000000+00:00'
+                    duration: 0
+                    project:
+                      self: /projects/2
+                    title: 'Client Meeting'
+                    notes: 'Some more detailed notes'
+                    is_running: true
+                    creator_id: /users/1
+                    creator_name: 'Johnny Appleseed'
+                    custom_fields:
+                      field_name: field_value
+                  message: "Timer 'Client Meeting' started."
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      self:
+                        type: string
+                        example: /time-entries/2
+                      start_date:
+                        type: string
+                        example: '2019-01-01T00:00:00.000000+00:00'
+                      end_date:
+                        type: string
+                        example: '2019-01-01T00:00:00.000000+00:00'
+                      duration:
+                        type: integer
+                        example: 0
+                      project:
+                        type: object
+                        properties:
+                          self:
+                            type: string
+                            example: /projects/2
+                      title:
+                        type: string
+                        example: 'Client Meeting'
+                      notes:
+                        type: string
+                        example: 'Some more detailed notes'
+                      is_running:
+                        type: boolean
+                        example: true
+                      creator_id:
+                        type: string
+                        example: /users/1
+                      creator_name:
+                        type: string
+                        example: 'Johnny Appleseed'
+                      custom_fields:
+                        type: object
+                        properties:
+                          field_name:
+                            type: string
+                            example: field_value
+                  message:
+                    type: string
+                    example: "Timer 'Client Meeting' started."
+      tags:
+        - 'Time Entries'
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                start_date:
+                  type: string
+                  description: 'The date this timer should have started at. Defaults to "now".'
+                  example: '2019-01-01T00:00:00+00:00'
+                  nullable: true
+                project:
+                  type: string
+                  description: 'The project this timer is associated with. Can be a project reference in the form `"/projects/1"`, a project title (e.g. `"Project at root level"`), or an array with the project''s entire title chain (e.g. `["Project at root level", "Unproductive child project"]`).'
+                  example: 'Unproductive child project'
+                  nullable: true
+                title:
+                  type: string
+                  description: "The timer's title."
+                  example: 'Client Meeting'
+                  nullable: true
+                notes:
+                  type: string
+                  description: "The timer's notes."
+                  example: 'Some more detailed notes'
+                  nullable: true
+                replace_existing:
+                  type: boolean
+                  description: 'If true, any existing time entries that overlap with the new time entry will be adjusted to avoid overlap, or deleted altogether. Defaults to false.'
+                  example: false
+                  nullable: true
+                custom_fields:
+                  type: object
+                  description: 'A list of custom field name/value pairs to store. For more details, see [Custom fields](#custom-fields).'
+                  example:
+                    field_name: field_value
+                  nullable: true
+                  properties: {  }
+  /api/v1/time-entries/stop:
+    put:
+      summary: 'Stop timer.'
+      operationId: stopTimer
+      description: "<br>Stop the currently running timer.\n\nReturns the stopped timer's attributes as listed under [Display the specified time entry.](#time-entries-GETapi-v1-time-entries--time_entry_id-)."
+      parameters: []
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  data:
+                    self: /time-entries/1
+                    start_date: '2019-01-01T00:00:00.000000+00:00'
+                    end_date: '2019-01-01T01:00:00.000000+00:00'
+                    duration: 3600
+                    project:
+                      self: /projects/1
+                    title: 'Client Meeting'
+                    notes: 'Some more detailed notes'
+                    is_running: false
+                    creator_id: /users/1
+                    creator_name: 'Johnny Appleseed'
+                    custom_fields: {  }
+                  message: "Timer 'Client Meeting' stopped."
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      self:
+                        type: string
+                        example: /time-entries/1
+                      start_date:
+                        type: string
+                        example: '2019-01-01T00:00:00.000000+00:00'
+                      end_date:
+                        type: string
+                        example: '2019-01-01T01:00:00.000000+00:00'
+                      duration:
+                        type: integer
+                        example: 3600
+                      project:
+                        type: object
+                        properties:
+                          self:
+                            type: string
+                            example: /projects/1
+                      title:
+                        type: string
+                        example: 'Client Meeting'
+                      notes:
+                        type: string
+                        example: 'Some more detailed notes'
+                      is_running:
+                        type: boolean
+                        example: false
+                      creator_id:
+                        type: string
+                        example: /users/1
+                      creator_name:
+                        type: string
+                        example: 'Johnny Appleseed'
+                      custom_fields:
+                        type: object
+                        properties: {  }
+                  message:
+                    type: string
+                    example: "Timer 'Client Meeting' stopped."
+      tags:
+        - 'Time Entries'
+  /api/v1/time-entries/latest:
+    get:
+      summary: 'Show latest time entry.'
+      operationId: showLatestTimeEntry
+      description: "<br>Redirect to the latest time entry.\n\nSee [Display the specified time entry.](#time-entries-GETapi-v1-time-entries--time_entry_id-) for the route the\nredirect points to.\n\n<aside class=\"notice\">\nIf no time entry is found, a 404 response will be returned.\n</aside>\n<aside class=\"notice\">\nThis route is only available for <code>GET</code> requests. If you'd like to e.g. <em>edit</em> the latest time\nentry, use this route to retrieve a link to the desired entry, then use that link to assemble a new request for\nthe desired action.\n</aside>"
+      parameters: []
+      responses:
+        302:
+          description: ''
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "<!DOCTYPE html>\n<html>\n    <head>\n        <meta charset=\"UTF-8\" />\n        <meta http-equiv=\"refresh\" content=\"0;url='https://web.timingapp.com/api/v1/time-entries/1'\" />\n\n        <title>Redirecting to https://web.timingapp.com/api/v1/time-entries/1</title>\n    </head>\n    <body>\n        Redirecting to <a href=\"https://web.timingapp.com/api/v1/time-entries/1\">https://web.timingapp.com/api/v1/time-entries/1</a>.\n    </body>\n</html>"
+      tags:
+        - 'Time Entries'
+  /api/v1/time-entries/running:
+    get:
+      summary: 'Show running timer.'
+      operationId: showRunningTimer
+      description: "<br>Redirect to the currently running timer.\n\nSee [Display the specified time entry.](#time-entries-GETapi-v1-time-entries--time_entry_id-) for the route the\nredirect points to.\n\n<aside class=\"notice\">\nIf no timer is currently running, a 404 response will be returned.\n</aside>\n<aside class=\"notice\">\nThis route is only available for <code>GET</code> requests. If you'd like to e.g. <em>edit</em> the latest time\nentry, use this route to retrieve a link to the desired entry, then use that link to assemble a new request for\nthe desired action.\n</aside>"
+      parameters: []
+      responses:
+        404:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  message: 'No running timer found.'
+                properties:
+                  message:
+                    type: string
+                    example: 'No running timer found.'
+      tags:
+        - 'Time Entries'
+      security: []
+  /api/v1/time-entries:
+    get:
+      summary: 'List time entries.'
+      operationId: listTimeEntries
+      description: "<br>Return a list of time entries.\n\nSee [Display the specified time entry.](#time-entries-GETapi-v1-time-entries--time_entry_id-) for the returned attributes.\n\nItems are ordered descending by their `start_date` field.\n\n<aside class=\"notice\">\nIf no date range filter is provided by setting <em>both</em> `start_date_min` <em>and</em> `start_date_max`,\nthis query returns all time entries between midnight (UTC) 30 days ago and end of day (UTC) today.\n</aside>"
+      parameters:
+        -
+          in: query
+          name: start_date_min
+          description: 'Restricts the query to time entries whose start date is equal to or later than this parameter.'
+          example: '2019-01-01'
+          required: false
+          schema:
+            type: string
+            description: 'Restricts the query to time entries whose start date is equal to or later than this parameter.'
+            example: '2019-01-01'
+            nullable: false
+        -
+          in: query
+          name: start_date_max
+          description: 'Restricts the query to time entries whose start date is equal to or earlier than this parameter.'
+          example: '2019-01-01'
+          required: false
+          schema:
+            type: string
+            description: 'Restricts the query to time entries whose start date is equal to or earlier than this parameter.'
+            example: '2019-01-01'
+            nullable: false
+        -
+          in: query
+          name: projects
+          description: 'Restricts the query to time entries associated with the given project. Can be repeated to include time entries from several projects. If you would like to include time entries that are not assigned to any project, you can provide an empty string, i.e. `projects[]=`'
+          example:
+            - /projects/1
+          required: false
+          schema:
+            type: array
+            description: 'Restricts the query to time entries associated with the given project. Can be repeated to include time entries from several projects. If you would like to include time entries that are not assigned to any project, you can provide an empty string, i.e. `projects[]=`'
+            example:
+              - /projects/1
+            items:
+              type: string
+        -
+          in: query
+          name: include_child_projects
+          description: 'If true, the response will also contain time entries that belong to any child projects of the ones provided in `projects[]`. Default: `0`'
+          example: '1'
+          required: false
+          schema:
+            type: boolean
+            description: 'If true, the response will also contain time entries that belong to any child projects of the ones provided in `projects[]`. Default: `0`'
+            example: '1'
+            nullable: false
+        -
+          in: query
+          name: search_query
+          description: 'Restricts the query to time entries whose title and/or notes contain all words in this parameter. The search is case-insensitive but diacritic-sensitive.'
+          example: meeting
+          required: false
+          schema:
+            type: string
+            description: 'Restricts the query to time entries whose title and/or notes contain all words in this parameter. The search is case-insensitive but diacritic-sensitive.'
+            example: meeting
+            nullable: false
+        -
+          in: query
+          name: is_running
+          description: 'If provided, returns only time entries that are either running or not running. Default: `0`'
+          example: '0'
+          required: false
+          schema:
+            type: boolean
+            description: 'If provided, returns only time entries that are either running or not running. Default: `0`'
+            example: '0'
+            nullable: false
+        -
+          in: query
+          name: include_project_data
+          description: "If true, the properties of the time entry's project will be included in the response. Default: `0`"
+          example: '1'
+          required: false
+          schema:
+            type: boolean
+            description: "If true, the properties of the time entry's project will be included in the response. Default: `0`"
+            example: '1'
+            nullable: false
+        -
+          in: query
+          name: include_team_members
+          description: 'If true, the response will also contain time entries that belong to other team members, provided the current user has permission to view them. Default: `0`'
+          example: '0'
+          required: false
+          schema:
+            type: boolean
+            description: 'If true, the response will also contain time entries that belong to other team members, provided the current user has permission to view them. Default: `0`'
+            example: '0'
+            nullable: false
+        -
+          in: query
+          name: team_members
+          description: 'Restricts the query to data associated with the given user. Can be repeated to include time entries from several users.'
+          example:
+            - /users/1
+          required: false
+          schema:
+            type: array
+            description: 'Restricts the query to data associated with the given user. Can be repeated to include time entries from several users.'
+            example:
+              - /users/1
+            items:
+              type: string
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  data:
+                    -
+                      self: /time-entries/1
+                      start_date: '2019-01-01T00:00:00.000000+00:00'
+                      end_date: '2019-01-01T01:00:00.000000+00:00'
+                      duration: 3600
+                      project:
+                        self: /projects/1
+                        team_id: null
+                        title: 'Project at root level'
+                        title_chain:
+                          - 'Project at root level'
+                        color: '#FF0000'
+                        productivity_score: 1
+                        is_archived: false
+                        notes: null
+                        parent: null
+                        custom_fields: {  }
+                      title: 'Client Meeting'
+                      notes: 'Some more detailed notes'
+                      is_running: false
+                      creator_id: /users/1
+                      creator_name: 'Johnny Appleseed'
+                      custom_fields: {  }
+                  links:
+                    first: 'http://timing-web.test/api/v1/time-entries?start_date_min=2019-01-01&start_date_max=2019-01-01&projects%5B0%5D=%2Fprojects%2F1&include_child_projects=1&search_query=meeting&is_running=0&include_project_data=1&include_team_members=0&team_members%5B0%5D=%2Fusers%2F1&page=1'
+                    last: 'http://timing-web.test/api/v1/time-entries?start_date_min=2019-01-01&start_date_max=2019-01-01&projects%5B0%5D=%2Fprojects%2F1&include_child_projects=1&search_query=meeting&is_running=0&include_project_data=1&include_team_members=0&team_members%5B0%5D=%2Fusers%2F1&page=1'
+                    prev: null
+                    next: null
+                  meta:
+                    current_page: 1
+                    from: 1
+                    last_page: 1
+                    links:
+                      -
+                        url: null
+                        label: '&laquo; Previous'
+                        active: false
+                      -
+                        url: 'http://timing-web.test/api/v1/time-entries?start_date_min=2019-01-01&start_date_max=2019-01-01&projects%5B0%5D=%2Fprojects%2F1&include_child_projects=1&search_query=meeting&is_running=0&include_project_data=1&include_team_members=0&team_members%5B0%5D=%2Fusers%2F1&page=1'
+                        label: '1'
+                        active: true
+                      -
+                        url: null
+                        label: 'Next &raquo;'
+                        active: false
+                    path: 'http://timing-web.test/api/v1/time-entries'
+                    per_page: 1000
+                    to: 1
+                    total: 1
+                properties:
+                  data:
+                    type: array
+                    example:
+                      -
+                        self: /time-entries/1
+                        start_date: '2019-01-01T00:00:00.000000+00:00'
+                        end_date: '2019-01-01T01:00:00.000000+00:00'
+                        duration: 3600
+                        project:
+                          self: /projects/1
+                          team_id: null
+                          title: 'Project at root level'
+                          title_chain:
+                            - 'Project at root level'
+                          color: '#FF0000'
+                          productivity_score: 1
+                          is_archived: false
+                          notes: null
+                          parent: null
+                          custom_fields: []
+                        title: 'Client Meeting'
+                        notes: 'Some more detailed notes'
+                        is_running: false
+                        creator_id: /users/1
+                        creator_name: 'Johnny Appleseed'
+                        custom_fields: []
+                    items:
+                      type: object
+                      properties:
+                        self:
+                          type: string
+                          example: /time-entries/1
+                        start_date:
+                          type: string
+                          example: '2019-01-01T00:00:00.000000+00:00'
+                        end_date:
+                          type: string
+                          example: '2019-01-01T01:00:00.000000+00:00'
+                        duration:
+                          type: integer
+                          example: 3600
+                        project:
+                          type: object
+                          properties:
+                            self:
+                              type: string
+                              example: /projects/1
+                            team_id:
+                              type: string
+                              example: null
+                            title:
+                              type: string
+                              example: 'Project at root level'
+                            title_chain:
+                              type: array
+                              example:
+                                - 'Project at root level'
+                              items:
+                                type: string
+                            color:
+                              type: string
+                              example: '#FF0000'
+                            productivity_score:
+                              type: integer
+                              example: 1
+                            is_archived:
+                              type: boolean
+                              example: false
+                            notes:
+                              type: string
+                              example: null
+                            parent:
+                              type: string
+                              example: null
+                            custom_fields:
+                              type: object
+                              properties: {  }
+                        title:
+                          type: string
+                          example: 'Client Meeting'
+                        notes:
+                          type: string
+                          example: 'Some more detailed notes'
+                        is_running:
+                          type: boolean
+                          example: false
+                        creator_id:
+                          type: string
+                          example: /users/1
+                        creator_name:
+                          type: string
+                          example: 'Johnny Appleseed'
+                        custom_fields:
+                          type: object
+                          properties: {  }
+                  links:
+                    type: object
+                    properties:
+                      first:
+                        type: string
+                        example: 'http://timing-web.test/api/v1/time-entries?start_date_min=2019-01-01&start_date_max=2019-01-01&projects%5B0%5D=%2Fprojects%2F1&include_child_projects=1&search_query=meeting&is_running=0&include_project_data=1&include_team_members=0&team_members%5B0%5D=%2Fusers%2F1&page=1'
+                      last:
+                        type: string
+                        example: 'http://timing-web.test/api/v1/time-entries?start_date_min=2019-01-01&start_date_max=2019-01-01&projects%5B0%5D=%2Fprojects%2F1&include_child_projects=1&search_query=meeting&is_running=0&include_project_data=1&include_team_members=0&team_members%5B0%5D=%2Fusers%2F1&page=1'
+                      prev:
+                        type: string
+                        example: null
+                      next:
+                        type: string
+                        example: null
+                  meta:
+                    type: object
+                    properties:
+                      current_page:
+                        type: integer
+                        example: 1
+                      from:
+                        type: integer
+                        example: 1
+                      last_page:
+                        type: integer
+                        example: 1
+                      links:
+                        type: array
+                        example:
+                          -
+                            url: null
+                            label: '&laquo; Previous'
+                            active: false
+                          -
+                            url: 'http://timing-web.test/api/v1/time-entries?start_date_min=2019-01-01&start_date_max=2019-01-01&projects%5B0%5D=%2Fprojects%2F1&include_child_projects=1&search_query=meeting&is_running=0&include_project_data=1&include_team_members=0&team_members%5B0%5D=%2Fusers%2F1&page=1'
+                            label: '1'
+                            active: true
+                          -
+                            url: null
+                            label: 'Next &raquo;'
+                            active: false
+                        items:
+                          type: object
+                          properties:
+                            url:
+                              type: string
+                              example: null
+                            label:
+                              type: string
+                              example: '&laquo; Previous'
+                            active:
+                              type: boolean
+                              example: false
+                      path:
+                        type: string
+                        example: 'http://timing-web.test/api/v1/time-entries'
+                      per_page:
+                        type: integer
+                        example: 1000
+                      to:
+                        type: integer
+                        example: 1
+                      total:
+                        type: integer
+                        example: 1
+      tags:
+        - 'Time Entries'
+    post:
+      summary: 'Create time entry.'
+      operationId: createTimeEntry
+      description: "<br>Create a new time entry.\n\nSee [Display the specified time entry.](#time-entries-GETapi-v1-time-entries--time_entry_id-) for the returned attributes.\n\n<aside class=\"notice\">\nThe title and project fields can not both be empty.\n</aside>"
+      parameters: []
+      responses:
+        201:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  data:
+                    self: /time-entries/2
+                    start_date: '2019-01-01T00:00:00.000000+00:00'
+                    end_date: '2019-01-01T01:00:00.000000+00:00'
+                    duration: 3600
+                    project:
+                      self: /projects/2
+                    title: 'Client Meeting'
+                    notes: 'Some more detailed notes'
+                    is_running: false
+                    creator_id: /users/1
+                    creator_name: 'Johnny Appleseed'
+                    custom_fields:
+                      field_name: field_value
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      self:
+                        type: string
+                        example: /time-entries/2
+                      start_date:
+                        type: string
+                        example: '2019-01-01T00:00:00.000000+00:00'
+                      end_date:
+                        type: string
+                        example: '2019-01-01T01:00:00.000000+00:00'
+                      duration:
+                        type: integer
+                        example: 3600
+                      project:
+                        type: object
+                        properties:
+                          self:
+                            type: string
+                            example: /projects/2
+                      title:
+                        type: string
+                        example: 'Client Meeting'
+                      notes:
+                        type: string
+                        example: 'Some more detailed notes'
+                      is_running:
+                        type: boolean
+                        example: false
+                      creator_id:
+                        type: string
+                        example: /users/1
+                      creator_name:
+                        type: string
+                        example: 'Johnny Appleseed'
+                      custom_fields:
+                        type: object
+                        properties:
+                          field_name:
+                            type: string
+                            example: field_value
+      tags:
+        - 'Time Entries'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                start_date:
+                  type: string
+                  description: "The time entry's start date and time."
+                  example: '2019-01-01T00:00:00+00:00'
+                  nullable: false
+                end_date:
+                  type: string
+                  description: "The time entry's end date and time."
+                  example: '2019-01-01T01:00:00+00:00'
+                  nullable: false
+                project:
+                  type: string
+                  description: 'The project this time entry is associated with. Can be a project reference in the form `"/projects/1"`, a project title (e.g. `"Project at root level"`), or an array with the project''s entire title chain (e.g. `["Project at root level", "Unproductive child project"]`).'
+                  example: 'Unproductive child project'
+                  nullable: true
+                title:
+                  type: string
+                  description: "The time entry's title."
+                  example: 'Client Meeting'
+                  nullable: true
+                notes:
+                  type: string
+                  description: "The time entry's notes."
+                  example: 'Some more detailed notes'
+                  nullable: true
+                replace_existing:
+                  type: boolean
+                  description: 'If true, any existing time entries that overlap with the new time entry will be adjusted to avoid overlap, or deleted altogether. Defaults to false.'
+                  example: false
+                  nullable: true
+                custom_fields:
+                  type: object
+                  description: 'A list of custom field name/value pairs to store. For more details, see [Custom fields](#custom-fields).'
+                  example:
+                    field_name: field_value
+                  nullable: true
+                  properties: {  }
+              required:
+                - start_date
+                - end_date
+  '/api/v1/time-entries/{time_entry_id}':
+    get:
+      summary: 'Show time entry.'
+      operationId: showTimeEntry
+      description: "<br>Display the specified time entry.\n\nThe following attributes will be returned:\n\n - `self`: A link to the entity itself, relative to the API root.\n - `start_date`: The time entry's start date and time.\n - `end_date`: The time entry's end date and time.\n - `duration`: The time entry's total duration, in seconds.\n - `project`: The project this time entry is associated with.\n - `title`: The time entry's title.\n - `notes`: The time entry's notes.\n - `is_running`: Whether the time entry is currently running. Only one time entry can be running at any given time."
+      parameters:
+        -
+          in: query
+          name: other_user_id
+          description: 'The ID of the other user must be provided when making changes to the time entries of a colleague. This, along with the user having the required permissions, confirms that changes to the time entries of a colleague are allowed, and that the correct user is being targetted. Without this field, operations for other users will be rejected to prevent accidental changes to other users’ time entries.'
+          example: /users/1
+          required: false
+          schema:
+            type: string
+            description: 'The ID of the other user must be provided when making changes to the time entries of a colleague. This, along with the user having the required permissions, confirms that changes to the time entries of a colleague are allowed, and that the correct user is being targetted. Without this field, operations for other users will be rejected to prevent accidental changes to other users’ time entries.'
+            example: /users/1
+            nullable: true
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  data:
+                    self: /time-entries/1
+                    start_date: '2019-01-01T00:00:00.000000+00:00'
+                    end_date: '2019-01-01T01:00:00.000000+00:00'
+                    duration: 3600
+                    project:
+                      self: /projects/1
+                    title: 'Client Meeting'
+                    notes: 'Some more detailed notes'
+                    is_running: false
+                    creator_id: /users/1
+                    creator_name: 'Johnny Appleseed'
+                    custom_fields: {  }
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      self:
+                        type: string
+                        example: /time-entries/1
+                      start_date:
+                        type: string
+                        example: '2019-01-01T00:00:00.000000+00:00'
+                      end_date:
+                        type: string
+                        example: '2019-01-01T01:00:00.000000+00:00'
+                      duration:
+                        type: integer
+                        example: 3600
+                      project:
+                        type: object
+                        properties:
+                          self:
+                            type: string
+                            example: /projects/1
+                      title:
+                        type: string
+                        example: 'Client Meeting'
+                      notes:
+                        type: string
+                        example: 'Some more detailed notes'
+                      is_running:
+                        type: boolean
+                        example: false
+                      creator_id:
+                        type: string
+                        example: /users/1
+                      creator_name:
+                        type: string
+                        example: 'Johnny Appleseed'
+                      custom_fields:
+                        type: object
+                        properties: {  }
+      tags:
+        - 'Time Entries'
+    put:
+      summary: 'Update time entry.'
+      operationId: updateTimeEntry
+      description: "<br>Update the specified time entry.\n\nSee [Display the specified time entry.](#time-entries-GETapi-v1-time-entries--time_entry_id-) for the returned attributes.\n\n<aside class=\"notice\">\nOmitted fields will not be updated, even when using the `PUT` method.\n</aside>\n\n<aside class=\"notice\">\nA time entry's title and project fields can not both be empty.\n</aside>"
+      parameters:
+        -
+          in: query
+          name: other_user_id
+          description: 'The ID of the other user must be provided when making changes to the time entries of a colleague. This, along with the user having the required permissions, confirms that changes to the time entries of a colleague are allowed, and that the correct user is being targetted. Without this field, operations for other users will be rejected to prevent accidental changes to other users’ time entries.'
+          example: /users/1
+          required: false
+          schema:
+            type: string
+            description: 'The ID of the other user must be provided when making changes to the time entries of a colleague. This, along with the user having the required permissions, confirms that changes to the time entries of a colleague are allowed, and that the correct user is being targetted. Without this field, operations for other users will be rejected to prevent accidental changes to other users’ time entries.'
+            example: /users/1
+            nullable: true
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  data:
+                    self: /time-entries/1
+                    start_date: '2019-01-01T00:00:00.000000+00:00'
+                    end_date: '2019-01-01T01:00:00.000000+00:00'
+                    duration: 3600
+                    project:
+                      self: /projects/2
+                    title: 'Client Meeting'
+                    notes: 'Some more detailed notes'
+                    is_running: false
+                    creator_id: /users/1
+                    creator_name: 'Johnny Appleseed'
+                    custom_fields:
+                      field_name: field_value
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      self:
+                        type: string
+                        example: /time-entries/1
+                      start_date:
+                        type: string
+                        example: '2019-01-01T00:00:00.000000+00:00'
+                      end_date:
+                        type: string
+                        example: '2019-01-01T01:00:00.000000+00:00'
+                      duration:
+                        type: integer
+                        example: 3600
+                      project:
+                        type: object
+                        properties:
+                          self:
+                            type: string
+                            example: /projects/2
+                      title:
+                        type: string
+                        example: 'Client Meeting'
+                      notes:
+                        type: string
+                        example: 'Some more detailed notes'
+                      is_running:
+                        type: boolean
+                        example: false
+                      creator_id:
+                        type: string
+                        example: /users/1
+                      creator_name:
+                        type: string
+                        example: 'Johnny Appleseed'
+                      custom_fields:
+                        type: object
+                        properties:
+                          field_name:
+                            type: string
+                            example: field_value
+      tags:
+        - 'Time Entries'
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                start_date:
+                  type: string
+                  description: "The time entry's start date and time."
+                  example: '2019-01-01T00:00:00+00:00'
+                  nullable: false
+                end_date:
+                  type: string
+                  description: "The time entry's start date and time."
+                  example: '2019-01-01T01:00:00+00:00'
+                  nullable: false
+                project:
+                  type: string
+                  description: 'The project this time entry is associated with. Can be a project reference in the form `"/projects/1"`, a project title (e.g. `"Project at root level"`), or an array with the project''s entire title chain (e.g. `["Project at root level", "Unproductive child project"]`).'
+                  example: 'Unproductive child project'
+                  nullable: true
+                title:
+                  type: string
+                  description: "The time entry's title."
+                  example: 'Client Meeting'
+                  nullable: true
+                notes:
+                  type: string
+                  description: "The time entry's notes."
+                  example: 'Some more detailed notes'
+                  nullable: true
+                replace_existing:
+                  type: boolean
+                  description: "If true and the entry's start or end date has changed, any existing time entries that overlap with the updated time entry will be adjusted to avoid overlap, or deleted altogether. Defaults to false."
+                  example: false
+                  nullable: true
+                custom_fields:
+                  type: object
+                  description: 'A list of custom field name/value pairs to update. For more details, see [Custom fields](#custom-fields).'
+                  example:
+                    field_name: field_value
+                  nullable: true
+                  properties: {  }
+    delete:
+      summary: 'Delete time entry.'
+      operationId: deleteTimeEntry
+      description: '<br>Delete the specified time entry.'
+      parameters:
+        -
+          in: query
+          name: other_user_id
+          description: 'The ID of the other user must be provided when making changes to the time entries of a colleague. This, along with the user having the required permissions, confirms that changes to the time entries of a colleague are allowed, and that the correct user is being targetted. Without this field, operations for other users will be rejected to prevent accidental changes to other users’ time entries.'
+          example: /users/1
+          required: false
+          schema:
+            type: string
+            description: 'The ID of the other user must be provided when making changes to the time entries of a colleague. This, along with the user having the required permissions, confirms that changes to the time entries of a colleague are allowed, and that the correct user is being targetted. Without this field, operations for other users will be rejected to prevent accidental changes to other users’ time entries.'
+            example: /users/1
+            nullable: true
+      responses:
+        204:
+          description: ''
+      tags:
+        - 'Time Entries'
+    parameters:
+      -
+        in: path
+        name: time_entry_id
+        description: 'The ID of the time entry to display.'
+        example: '1'
+        required: true
+        schema:
+          type: string

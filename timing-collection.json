@@ -1,0 +1,1257 @@
+{
+    "variable": [
+        {
+            "id": "baseUrl",
+            "key": "baseUrl",
+            "type": "string",
+            "name": "string",
+            "value": "https:\/\/web.timingapp.com"
+        }
+    ],
+    "info": {
+        "name": "API Reference",
+        "_postman_id": "802e4133-655e-402f-9336-9531ce6c46a4",
+        "description": "",
+        "schema": "https:\/\/schema.getpostman.com\/json\/collection\/v2.1.0\/collection.json"
+    },
+    "item": [
+        {
+            "name": "Projects",
+            "description": "",
+            "item": [
+                {
+                    "name": "List projects hierarchically.",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/projects\/hierarchy",
+                            "query": [
+                                {
+                                    "key": "team_id",
+                                    "value": "",
+                                    "description": "The ID of the team to list projects for. Can be omitted to list the user's private projects. See [Return a list containing all the teams you are a member of.](#teams-GETapi-v1-teams) for obtaining a team ID to provide here.",
+                                    "disabled": true
+                                }
+                            ],
+                            "raw": "{{baseUrl}}\/api\/v1\/projects\/hierarchy?team_id="
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "<br>Return the complete project hierarchy.\n\nSee [Display the specified project.](#projects-GETapi-v1-projects--project_id-) for the returned attributes."
+                    },
+                    "response": [
+                        {
+                            "header": [
+                                {
+                                    "key": "cache-control",
+                                    "value": "no-cache, private"
+                                },
+                                {
+                                    "key": "content-type",
+                                    "value": "application\/json"
+                                },
+                                {
+                                    "key": "x-ratelimit-limit",
+                                    "value": "500"
+                                },
+                                {
+                                    "key": "x-ratelimit-remaining",
+                                    "value": "499"
+                                },
+                                {
+                                    "key": "access-control-allow-origin",
+                                    "value": "*"
+                                }
+                            ],
+                            "code": 200,
+                            "body": "{\"data\":[{\"self\":\"\\\/projects\\\/1\",\"team_id\":null,\"title\":\"Project at root level\",\"title_chain\":[\"Project at root level\"],\"color\":\"#FF0000\",\"productivity_score\":1,\"is_archived\":false,\"notes\":null,\"children\":[{\"self\":\"\\\/projects\\\/2\",\"team_id\":null,\"title\":\"Unproductive child project\",\"title_chain\":[\"Project at root level\",\"Unproductive child project\"],\"color\":\"#00FF00\",\"productivity_score\":-1,\"is_archived\":false,\"notes\":null,\"children\":[],\"parent\":{\"self\":\"\\\/projects\\\/1\"},\"custom_fields\":{}}],\"parent\":null,\"custom_fields\":{}}]}",
+                            "name": ""
+                        }
+                    ]
+                },
+                {
+                    "name": "List projects.",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/projects",
+                            "query": [
+                                {
+                                    "key": "title",
+                                    "value": "root",
+                                    "description": "Filter for projects whose title contains all words in this parameter. The search is case-insensitive but diacritic-sensitive.",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "hide_archived",
+                                    "value": "1",
+                                    "description": "If set to `1`, archived projects and their children will not be included in the result.",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "team_id",
+                                    "value": "",
+                                    "description": "The ID of the team to list projects for. Can be omitted to list the user's private projects. See [Return a list containing all the teams you are a member of.](#teams-GETapi-v1-teams) for obtaining a team ID to provide here.",
+                                    "disabled": true
+                                }
+                            ],
+                            "raw": "{{baseUrl}}\/api\/v1\/projects?title=root&hide_archived=1&team_id="
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "<br>Return a list containing all projects.\n\nSee [Display the specified project.](#projects-GETapi-v1-projects--project_id-) for the returned attributes."
+                    },
+                    "response": [
+                        {
+                            "header": [
+                                {
+                                    "key": "cache-control",
+                                    "value": "no-cache, private"
+                                },
+                                {
+                                    "key": "content-type",
+                                    "value": "application\/json"
+                                },
+                                {
+                                    "key": "x-ratelimit-limit",
+                                    "value": "500"
+                                },
+                                {
+                                    "key": "x-ratelimit-remaining",
+                                    "value": "498"
+                                },
+                                {
+                                    "key": "access-control-allow-origin",
+                                    "value": "*"
+                                }
+                            ],
+                            "code": 200,
+                            "body": "{\"data\":[{\"self\":\"\\\/projects\\\/1\",\"team_id\":null,\"title\":\"Project at root level\",\"title_chain\":[\"Project at root level\"],\"color\":\"#FF0000\",\"productivity_score\":1,\"is_archived\":false,\"notes\":null,\"children\":[{\"self\":\"\\\/projects\\\/2\"}],\"parent\":null,\"custom_fields\":{}}]}",
+                            "name": ""
+                        }
+                    ]
+                },
+                {
+                    "name": "Create project.",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/projects",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/projects"
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"title\":\"Acme Inc.\",\"parent\":\"\\\/projects\\\/1\",\"color\":\"#FF0000\",\"productivity_score\":1,\"is_archived\":false,\"notes\":\"Some more detailed notes\",\"custom_fields\":{\"field_name\":\"field_value\"}}"
+                        },
+                        "description": "<br>Create a new project.\n\nSee [Display the specified project.](#projects-GETapi-v1-projects--project_id-) for the returned attributes.\n\n<aside class=\"notice\">\nIf you would like to add rules to a project, please <a href=\"https:\/\/timingapp.com\/contact\" target=\"_blank\" >contact us<\/a> for advice.\n<\/aside>"
+                    },
+                    "response": [
+                        {
+                            "header": [
+                                {
+                                    "key": "cache-control",
+                                    "value": "no-cache, private"
+                                },
+                                {
+                                    "key": "content-type",
+                                    "value": "application\/json"
+                                },
+                                {
+                                    "key": "x-ratelimit-limit",
+                                    "value": "500"
+                                },
+                                {
+                                    "key": "x-ratelimit-remaining",
+                                    "value": "497"
+                                },
+                                {
+                                    "key": "access-control-allow-origin",
+                                    "value": "*"
+                                }
+                            ],
+                            "code": 201,
+                            "body": "{\"data\":{\"self\":\"\\\/projects\\\/2\",\"team_id\":null,\"title\":\"Acme Inc.\",\"title_chain\":[\"Project at root level\",\"Acme Inc.\"],\"color\":\"#FF0000\",\"productivity_score\":1,\"is_archived\":false,\"notes\":\"Some more detailed notes\",\"children\":[],\"parent\":{\"self\":\"\\\/projects\\\/1\"},\"custom_fields\":{\"field_name\":\"field_value\"}},\"links\":{\"time-entries\":\"https:\\\/\\\/web.timingapp.com\\\/api\\\/v1\\\/time-entries?project[]=\\\/projects\\\/2\"}}",
+                            "name": ""
+                        }
+                    ]
+                },
+                {
+                    "name": "Show project.",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/projects\/:project_id",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/projects\/:project_id",
+                            "variable": [
+                                {
+                                    "id": "project_id",
+                                    "key": "project_id",
+                                    "value": "1",
+                                    "description": "The ID of the project to display."
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "<br>Display the specified project.\n\nThe following attributes will be returned:\n\n - `self`: A reference to the entity itself, relative to the API root.\n - `title`: The project's title.\n - `title_chain`: An array containing the title of the project and all its ancestors. Example: `[\"Parent\", \"Child\"]`\n - `color`: The project's color, in hexadecimal format (`#RRGGBB`). Example: `#FF0000`\n - `productivity_score`: The project's productivity rating, between -1 (very unproductive) and 1 (very productive). Example: `1`\n - `is_archived`: Whether the project has been archived. Defaults to false. Example: `false`\n - `parent`: A reference to the enclosing project.\n - `children`: The project's children.\n - `team_id`: The ID of the team that this project belongs to, if applicable.\n\n<aside class=\"notice\">\nChild projects are provided as references; i.e. they only contain the <code>self<\/code> attribute.\n<\/aside>"
+                    },
+                    "response": [
+                        {
+                            "header": [
+                                {
+                                    "key": "cache-control",
+                                    "value": "no-cache, private"
+                                },
+                                {
+                                    "key": "content-type",
+                                    "value": "application\/json"
+                                },
+                                {
+                                    "key": "x-ratelimit-limit",
+                                    "value": "500"
+                                },
+                                {
+                                    "key": "x-ratelimit-remaining",
+                                    "value": "496"
+                                },
+                                {
+                                    "key": "access-control-allow-origin",
+                                    "value": "*"
+                                }
+                            ],
+                            "code": 200,
+                            "body": "{\"data\":{\"self\":\"\\\/projects\\\/1\",\"team_id\":null,\"title\":\"Project at root level\",\"title_chain\":[\"Project at root level\"],\"color\":\"#FF0000\",\"productivity_score\":1,\"is_archived\":false,\"notes\":null,\"children\":[{\"self\":\"\\\/projects\\\/2\"}],\"parent\":null,\"custom_fields\":{}},\"links\":{\"time-entries\":\"https:\\\/\\\/web.timingapp.com\\\/api\\\/v1\\\/time-entries?project[]=\\\/projects\\\/1\"}}",
+                            "name": ""
+                        }
+                    ]
+                },
+                {
+                    "name": "Update project.",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/projects\/:project_id",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/projects\/:project_id",
+                            "variable": [
+                                {
+                                    "id": "project_id",
+                                    "key": "project_id",
+                                    "value": "1",
+                                    "description": "The ID of the project to update."
+                                }
+                            ]
+                        },
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"title\":\"Acme Inc.\",\"color\":\"#FF0000\",\"productivity_score\":1,\"is_archived\":false,\"notes\":\"Some more detailed notes\",\"custom_fields\":{\"field_name\":\"field_value\"}}"
+                        },
+                        "description": "<br>Update the specified project.\n\nSee [Display the specified project.](#projects-GETapi-v1-projects--project_id-) for the returned attributes.\n\n<aside class=\"notice\">\nOmitted fields will not be updated, even when using the `PUT` method.\n<\/aside>\n\n<aside class=\"notice\">\nChanging a project's parent or children is currently not possible.\n<\/aside>\n\n<aside class=\"notice\">\nIf you would like to add rules to a project, please <a href=\"https:\/\/timingapp.com\/contact\" target=\"_blank\" >contact us<\/a> for advice.\n<\/aside>"
+                    },
+                    "response": [
+                        {
+                            "header": [
+                                {
+                                    "key": "cache-control",
+                                    "value": "no-cache, private"
+                                },
+                                {
+                                    "key": "content-type",
+                                    "value": "application\/json"
+                                },
+                                {
+                                    "key": "x-ratelimit-limit",
+                                    "value": "500"
+                                },
+                                {
+                                    "key": "x-ratelimit-remaining",
+                                    "value": "495"
+                                },
+                                {
+                                    "key": "access-control-allow-origin",
+                                    "value": "*"
+                                }
+                            ],
+                            "code": 200,
+                            "body": "{\"data\":{\"self\":\"\\\/projects\\\/1\",\"team_id\":null,\"title\":\"Acme Inc.\",\"title_chain\":[\"Acme Inc.\"],\"color\":\"#FF0000\",\"productivity_score\":1,\"is_archived\":false,\"notes\":\"Some more detailed notes\",\"children\":[{\"self\":\"\\\/projects\\\/2\"}],\"parent\":null,\"custom_fields\":{\"field_name\":\"field_value\"}},\"links\":{\"time-entries\":\"https:\\\/\\\/web.timingapp.com\\\/api\\\/v1\\\/time-entries?project[]=\\\/projects\\\/1\"}}",
+                            "name": ""
+                        }
+                    ]
+                },
+                {
+                    "name": "Delete project.",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/projects\/:project_id",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/projects\/:project_id",
+                            "variable": [
+                                {
+                                    "id": "project_id",
+                                    "key": "project_id",
+                                    "value": "1",
+                                    "description": "The ID of the project to delete."
+                                }
+                            ]
+                        },
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "<br>Delete the specified project and all of its children."
+                    },
+                    "response": [
+                        {
+                            "header": [
+                                {
+                                    "key": "cache-control",
+                                    "value": "no-cache, private"
+                                },
+                                {
+                                    "key": "x-ratelimit-limit",
+                                    "value": "500"
+                                },
+                                {
+                                    "key": "x-ratelimit-remaining",
+                                    "value": "494"
+                                },
+                                {
+                                    "key": "access-control-allow-origin",
+                                    "value": "*"
+                                }
+                            ],
+                            "code": 204,
+                            "body": "",
+                            "name": ""
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Reports",
+            "description": "",
+            "item": [
+                {
+                    "name": "Generate report.",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/report",
+                            "query": [
+                                {
+                                    "key": "include_app_usage",
+                                    "value": "0",
+                                    "description": "Whether to include app usage in the report. If false, only time entries are returned. Default: `0`",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "include_team_members",
+                                    "value": "0",
+                                    "description": "If true, the response will also contain time entries that belong to other team members, provided the current user has permission to view them. Default: `0`",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "team_members[0]",
+                                    "value": "\/users\/1",
+                                    "description": "Restricts the query to data associated with the given user. Can be repeated to include time entries from several users.",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "start_date_min",
+                                    "value": "2019-01-01",
+                                    "description": "Restricts the query to data whose start date is equal to or later than this parameter.",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "start_date_max",
+                                    "value": "2019-01-01",
+                                    "description": "Restricts the query to data whose start date is equal to or earlier than this parameter.",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "projects[0]",
+                                    "value": "\/projects\/1",
+                                    "description": "Restricts the query to data associated with the given project. Can be repeated to include time entries from several projects. If you would like to include time entries that are not assigned to any project, you can provide an empty string, i.e. `projects[]=`",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "include_child_projects",
+                                    "value": "1",
+                                    "description": "If true, the response will also contain time entries that belong to any child projects of the ones provided in `projects[]`. Default: `0`",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "search_query",
+                                    "value": "meeting",
+                                    "description": "Restricts the query to time entries whose title and\/or notes contain all words in this parameter. The search is case-insensitive but diacritic-sensitive. Note: this parameter can not be used when app usage is included.",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "columns[0]",
+                                    "value": "project",
+                                    "description": "Which columns to show. Can be repeated to provide multiple columns. The `user` column is ignored if `include_team_members` is false. Possible values: `project`, `title`, `notes`, `timespan`, `user`. Default: `user`, `project`, `title`. `start_date` and `end_date` is shown when `timespan` column is sent.",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "project_grouping_level",
+                                    "value": "0",
+                                    "description": "When this argument is provided, report lines for projects below the given level will be aggregated by their parent project on the given level. For example, when `project_grouping_level` is 0, all times in sub-projects will be counted towards the corresponding project on the \"root\" (i.e. highest) level in the project tree. Can be a non-negative integer or -1. The default is -1, which indicates no grouping (i.e. all projects will be returned, regardless of how deep they are in the hierarchy). Requires `columns[]` to contain `project`.",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "include_project_data",
+                                    "value": "1",
+                                    "description": "If true, the properties of each line's project will be included in the response. Requires `columns[]` to contain `project`. Default: `0`",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "timespan_grouping_mode",
+                                    "value": "day",
+                                    "description": "When this argument is provided, report lines will be aggregated according to the given calendar unit. Possible values: `exact`, `day`, `week`, `month`, `year`. Default: `exact`",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "sort[0]",
+                                    "value": "-duration",
+                                    "description": "Sort the results ascending by the given column; for descending order prefix the column name with a minus sign. Can be repeated to provide multiple sort columns. Default: `-duration`. Examples: `sort[]=-duration` -> Sort descending by duration. `sort[]=user&sort[]=-duration` -> Sort ascending by user, then descending by duration.",
+                                    "disabled": false
+                                }
+                            ],
+                            "raw": "{{baseUrl}}\/api\/v1\/report?include_app_usage=0&include_team_members=0&team_members[0]=\/users\/1&start_date_min=2019-01-01&start_date_max=2019-01-01&projects[0]=\/projects\/1&include_child_projects=1&search_query=meeting&columns[0]=project&project_grouping_level=0&include_project_data=1&timespan_grouping_mode=day&sort[0]=-duration"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "<br>Generate a report that can contain both time entries and app usage.\n\nReturns a JSON array with several rows; each row includes the total duration (in seconds) belonging to the\ncorresponding other (configurable) columns.\n\nThe `include_app_usage` and `include_team_members` parameters govern whether to include app usage (otherwise, only time entries are returned) as well as data for other team members.\n<br>The `start_date_min`, `start_date_max`, `projects`(also see `include_child_projects`) and `search_query` parameters allow filtering the returned data.\n<br>The `columns`, `project_grouping_level`, `include_project_data`, `timespan_grouping_mode`, and `sort` parameters govern the presentation of the returned data.\n\n<aside class=\"notice\">\nFetching large amounts of app usage can put a substantial amount of load on our servers, so please be mindful before frequently requesting large amounts of data using this API.\n<\/aside>\n\n<aside class=\"notice\">\nIf no date range filter is provided by setting <em>both<\/em> `start_date_min` <em>and<\/em> `start_date_max`,\nthis query returns all time entries between midnight (UTC) 30 days ago and end of day (UTC) today.\n<\/aside>"
+                    },
+                    "response": [
+                        {
+                            "header": [
+                                {
+                                    "key": "cache-control",
+                                    "value": "no-cache, private"
+                                },
+                                {
+                                    "key": "content-type",
+                                    "value": "application\/json"
+                                },
+                                {
+                                    "key": "x-ratelimit-limit",
+                                    "value": "500"
+                                },
+                                {
+                                    "key": "x-ratelimit-remaining",
+                                    "value": "489"
+                                },
+                                {
+                                    "key": "access-control-allow-origin",
+                                    "value": "*"
+                                }
+                            ],
+                            "code": 200,
+                            "body": "{\"data\":[{\"duration\":3600,\"project\":{\"self\":\"\\\/projects\\\/1\",\"team_id\":null,\"title\":\"Project at root level\",\"title_chain\":[\"Project at root level\"],\"color\":\"#FF0000\",\"productivity_score\":1,\"is_archived\":false,\"notes\":null,\"parent\":null,\"custom_fields\":{}}}]}",
+                            "name": ""
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Teams",
+            "description": "",
+            "item": [
+                {
+                    "name": "List team members.",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/teams\/:team_id\/members",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/teams\/:team_id\/members",
+                            "variable": [
+                                {
+                                    "id": "team_id",
+                                    "key": "team_id",
+                                    "value": "1",
+                                    "description": "The ID of the team to list members for."
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "<br>Return a list containing all active members of the given team.\n\nMembers with pending invitations will be excluded.\n\nThe following attributes will be returned:\n\n - `self`: A reference to the entity itself, relative to the API root.\n - `email`: The team member's email address.\n - `name`: The team member's name. May be null if the team member has not entered a name in their account profile."
+                    },
+                    "response": [
+                        {
+                            "header": [
+                                {
+                                    "key": "cache-control",
+                                    "value": "no-cache, private"
+                                },
+                                {
+                                    "key": "content-type",
+                                    "value": "application\/json"
+                                },
+                                {
+                                    "key": "x-ratelimit-limit",
+                                    "value": "500"
+                                },
+                                {
+                                    "key": "x-ratelimit-remaining",
+                                    "value": "491"
+                                },
+                                {
+                                    "key": "access-control-allow-origin",
+                                    "value": "*"
+                                }
+                            ],
+                            "code": 200,
+                            "body": "{\"data\":[{\"self\":\"\\\/users\\\/1\",\"email\":\"johnny@appleseed.net\",\"name\":\"Johnny Appleseed\"}]}",
+                            "name": ""
+                        }
+                    ]
+                },
+                {
+                    "name": "List teams.",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/teams",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/teams"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "<br>Return a list containing all the teams you are a member of."
+                    },
+                    "response": [
+                        {
+                            "header": [
+                                {
+                                    "key": "cache-control",
+                                    "value": "no-cache, private"
+                                },
+                                {
+                                    "key": "content-type",
+                                    "value": "application\/json"
+                                },
+                                {
+                                    "key": "x-ratelimit-limit",
+                                    "value": "500"
+                                },
+                                {
+                                    "key": "x-ratelimit-remaining",
+                                    "value": "490"
+                                },
+                                {
+                                    "key": "access-control-allow-origin",
+                                    "value": "*"
+                                }
+                            ],
+                            "code": 200,
+                            "body": "{\"data\":[{\"id\":\"\\\/teams\\\/1\",\"name\":\"Demo Team\"}]}",
+                            "name": ""
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Time Entries",
+            "description": "",
+            "item": [
+                {
+                    "name": "Start timer.",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/time-entries\/start",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/time-entries\/start"
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"start_date\":\"2019-01-01T00:00:00+00:00\",\"project\":\"Unproductive child project\",\"title\":\"Client Meeting\",\"notes\":\"Some more detailed notes\",\"replace_existing\":false,\"custom_fields\":{\"field_name\":\"field_value\"}}"
+                        },
+                        "description": "<br>Start a new timer.\n\nThis also stops the currently running timer if there is one.\n\nSee [Display the specified time entry.](#time-entries-GETapi-v1-time-entries--time_entry_id-) for the returned attributes.\n\n<aside class=\"notice\">\nThe title and project fields can not both be empty.\n<\/aside>"
+                    },
+                    "response": [
+                        {
+                            "header": [
+                                {
+                                    "key": "cache-control",
+                                    "value": "no-cache, private"
+                                },
+                                {
+                                    "key": "content-type",
+                                    "value": "application\/json"
+                                },
+                                {
+                                    "key": "x-ratelimit-limit",
+                                    "value": "500"
+                                },
+                                {
+                                    "key": "x-ratelimit-remaining",
+                                    "value": "493"
+                                },
+                                {
+                                    "key": "access-control-allow-origin",
+                                    "value": "*"
+                                }
+                            ],
+                            "code": 201,
+                            "body": "{\"data\":{\"self\":\"\\\/time-entries\\\/2\",\"start_date\":\"2019-01-01T00:00:00.000000+00:00\",\"end_date\":\"2019-01-01T00:00:00.000000+00:00\",\"duration\":0,\"project\":{\"self\":\"\\\/projects\\\/2\"},\"title\":\"Client Meeting\",\"notes\":\"Some more detailed notes\",\"is_running\":true,\"creator_id\":\"\\\/users\\\/1\",\"creator_name\":\"Johnny Appleseed\",\"custom_fields\":{\"field_name\":\"field_value\"}},\"message\":\"Timer 'Client Meeting' started.\"}",
+                            "name": ""
+                        }
+                    ]
+                },
+                {
+                    "name": "Stop timer.",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/time-entries\/stop",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/time-entries\/stop"
+                        },
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "<br>Stop the currently running timer.\n\nReturns the stopped timer's attributes as listed under [Display the specified time entry.](#time-entries-GETapi-v1-time-entries--time_entry_id-)."
+                    },
+                    "response": [
+                        {
+                            "header": [
+                                {
+                                    "key": "cache-control",
+                                    "value": "no-cache, private"
+                                },
+                                {
+                                    "key": "content-type",
+                                    "value": "application\/json"
+                                },
+                                {
+                                    "key": "x-ratelimit-limit",
+                                    "value": "500"
+                                },
+                                {
+                                    "key": "x-ratelimit-remaining",
+                                    "value": "499"
+                                },
+                                {
+                                    "key": "access-control-allow-origin",
+                                    "value": "*"
+                                }
+                            ],
+                            "code": 200,
+                            "body": "{\"data\":{\"self\":\"\\\/time-entries\\\/1\",\"start_date\":\"2019-01-01T00:00:00.000000+00:00\",\"end_date\":\"2019-01-01T01:00:00.000000+00:00\",\"duration\":3600,\"project\":{\"self\":\"\\\/projects\\\/1\"},\"title\":\"Client Meeting\",\"notes\":\"Some more detailed notes\",\"is_running\":false,\"creator_id\":\"\\\/users\\\/1\",\"creator_name\":\"Johnny Appleseed\",\"custom_fields\":{}},\"message\":\"Timer 'Client Meeting' stopped.\"}",
+                            "name": ""
+                        }
+                    ]
+                },
+                {
+                    "name": "Show latest time entry.",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/time-entries\/latest",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/time-entries\/latest"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "<br>Redirect to the latest time entry.\n\nSee [Display the specified time entry.](#time-entries-GETapi-v1-time-entries--time_entry_id-) for the route the\nredirect points to.\n\n<aside class=\"notice\">\nIf no time entry is found, a 404 response will be returned.\n<\/aside>\n<aside class=\"notice\">\nThis route is only available for <code>GET<\/code> requests. If you'd like to e.g. <em>edit<\/em> the latest time\nentry, use this route to retrieve a link to the desired entry, then use that link to assemble a new request for\nthe desired action.\n<\/aside>"
+                    },
+                    "response": [
+                        {
+                            "header": [
+                                {
+                                    "key": "cache-control",
+                                    "value": "no-cache, private"
+                                },
+                                {
+                                    "key": "location",
+                                    "value": "https:\/\/web.timingapp.com\/api\/v1\/time-entries\/1"
+                                },
+                                {
+                                    "key": "content-type",
+                                    "value": "text\/html; charset=utf-8"
+                                },
+                                {
+                                    "key": "x-ratelimit-limit",
+                                    "value": "500"
+                                },
+                                {
+                                    "key": "x-ratelimit-remaining",
+                                    "value": "498"
+                                },
+                                {
+                                    "key": "access-control-allow-origin",
+                                    "value": "*"
+                                }
+                            ],
+                            "code": 302,
+                            "body": "<!DOCTYPE html>\n<html>\n    <head>\n        <meta charset=\"UTF-8\" \/>\n        <meta http-equiv=\"refresh\" content=\"0;url='https:\/\/web.timingapp.com\/api\/v1\/time-entries\/1'\" \/>\n\n        <title>Redirecting to https:\/\/web.timingapp.com\/api\/v1\/time-entries\/1<\/title>\n    <\/head>\n    <body>\n        Redirecting to <a href=\"https:\/\/web.timingapp.com\/api\/v1\/time-entries\/1\">https:\/\/web.timingapp.com\/api\/v1\/time-entries\/1<\/a>.\n    <\/body>\n<\/html>",
+                            "name": ""
+                        }
+                    ]
+                },
+                {
+                    "name": "Show running timer.",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/time-entries\/running",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/time-entries\/running"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "<br>Redirect to the currently running timer.\n\nSee [Display the specified time entry.](#time-entries-GETapi-v1-time-entries--time_entry_id-) for the route the\nredirect points to.\n\n<aside class=\"notice\">\nIf no timer is currently running, a 404 response will be returned.\n<\/aside>\n<aside class=\"notice\">\nThis route is only available for <code>GET<\/code> requests. If you'd like to e.g. <em>edit<\/em> the latest time\nentry, use this route to retrieve a link to the desired entry, then use that link to assemble a new request for\nthe desired action.\n<\/aside>",
+                        "auth": {
+                            "type": "noauth"
+                        }
+                    },
+                    "response": [
+                        {
+                            "header": [
+                                {
+                                    "key": "cache-control",
+                                    "value": "no-cache, private"
+                                },
+                                {
+                                    "key": "content-type",
+                                    "value": "application\/json"
+                                },
+                                {
+                                    "key": "x-ratelimit-limit",
+                                    "value": "500"
+                                },
+                                {
+                                    "key": "x-ratelimit-remaining",
+                                    "value": "497"
+                                },
+                                {
+                                    "key": "access-control-allow-origin",
+                                    "value": "*"
+                                }
+                            ],
+                            "code": 404,
+                            "body": "{\"message\":\"No running timer found.\"}",
+                            "name": ""
+                        }
+                    ]
+                },
+                {
+                    "name": "List time entries.",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/time-entries",
+                            "query": [
+                                {
+                                    "key": "start_date_min",
+                                    "value": "2019-01-01",
+                                    "description": "Restricts the query to time entries whose start date is equal to or later than this parameter.",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "start_date_max",
+                                    "value": "2019-01-01",
+                                    "description": "Restricts the query to time entries whose start date is equal to or earlier than this parameter.",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "projects[0]",
+                                    "value": "\/projects\/1",
+                                    "description": "Restricts the query to time entries associated with the given project. Can be repeated to include time entries from several projects. If you would like to include time entries that are not assigned to any project, you can provide an empty string, i.e. `projects[]=`",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "include_child_projects",
+                                    "value": "1",
+                                    "description": "If true, the response will also contain time entries that belong to any child projects of the ones provided in `projects[]`. Default: `0`",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "search_query",
+                                    "value": "meeting",
+                                    "description": "Restricts the query to time entries whose title and\/or notes contain all words in this parameter. The search is case-insensitive but diacritic-sensitive.",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "is_running",
+                                    "value": "0",
+                                    "description": "If provided, returns only time entries that are either running or not running. Default: `0`",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "include_project_data",
+                                    "value": "1",
+                                    "description": "If true, the properties of the time entry's project will be included in the response. Default: `0`",
+                                    "disabled": false
+                                },
+                                {
+                                    "key": "include_team_members",
+                                    "value": "0",
+                                    "description": "If true, the response will also contain time entries that belong to other team members, provided the current user has permission to view them. Default: `0`",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "team_members[0]",
+                                    "value": "\/users\/1",
+                                    "description": "Restricts the query to data associated with the given user. Can be repeated to include time entries from several users.",
+                                    "disabled": false
+                                }
+                            ],
+                            "raw": "{{baseUrl}}\/api\/v1\/time-entries?start_date_min=2019-01-01&start_date_max=2019-01-01&projects[0]=\/projects\/1&include_child_projects=1&search_query=meeting&is_running=0&include_project_data=1&include_team_members=0&team_members[0]=\/users\/1"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "<br>Return a list of time entries.\n\nSee [Display the specified time entry.](#time-entries-GETapi-v1-time-entries--time_entry_id-) for the returned attributes.\n\nItems are ordered descending by their `start_date` field.\n\n<aside class=\"notice\">\nIf no date range filter is provided by setting <em>both<\/em> `start_date_min` <em>and<\/em> `start_date_max`,\nthis query returns all time entries between midnight (UTC) 30 days ago and end of day (UTC) today.\n<\/aside>"
+                    },
+                    "response": [
+                        {
+                            "header": [
+                                {
+                                    "key": "cache-control",
+                                    "value": "no-cache, private"
+                                },
+                                {
+                                    "key": "content-type",
+                                    "value": "application\/json"
+                                },
+                                {
+                                    "key": "x-ratelimit-limit",
+                                    "value": "500"
+                                },
+                                {
+                                    "key": "x-ratelimit-remaining",
+                                    "value": "496"
+                                },
+                                {
+                                    "key": "access-control-allow-origin",
+                                    "value": "*"
+                                }
+                            ],
+                            "code": 200,
+                            "body": "{\"data\":[{\"self\":\"\\\/time-entries\\\/1\",\"start_date\":\"2019-01-01T00:00:00.000000+00:00\",\"end_date\":\"2019-01-01T01:00:00.000000+00:00\",\"duration\":3600,\"project\":{\"self\":\"\\\/projects\\\/1\",\"team_id\":null,\"title\":\"Project at root level\",\"title_chain\":[\"Project at root level\"],\"color\":\"#FF0000\",\"productivity_score\":1,\"is_archived\":false,\"notes\":null,\"parent\":null,\"custom_fields\":{}},\"title\":\"Client Meeting\",\"notes\":\"Some more detailed notes\",\"is_running\":false,\"creator_id\":\"\\\/users\\\/1\",\"creator_name\":\"Johnny Appleseed\",\"custom_fields\":{}}],\"links\":{\"first\":\"http:\\\/\\\/timing-web.test\\\/api\\\/v1\\\/time-entries?start_date_min=2019-01-01&start_date_max=2019-01-01&projects%5B0%5D=%2Fprojects%2F1&include_child_projects=1&search_query=meeting&is_running=0&include_project_data=1&include_team_members=0&team_members%5B0%5D=%2Fusers%2F1&page=1\",\"last\":\"http:\\\/\\\/timing-web.test\\\/api\\\/v1\\\/time-entries?start_date_min=2019-01-01&start_date_max=2019-01-01&projects%5B0%5D=%2Fprojects%2F1&include_child_projects=1&search_query=meeting&is_running=0&include_project_data=1&include_team_members=0&team_members%5B0%5D=%2Fusers%2F1&page=1\",\"prev\":null,\"next\":null},\"meta\":{\"current_page\":1,\"from\":1,\"last_page\":1,\"links\":[{\"url\":null,\"label\":\"&laquo; Previous\",\"active\":false},{\"url\":\"http:\\\/\\\/timing-web.test\\\/api\\\/v1\\\/time-entries?start_date_min=2019-01-01&start_date_max=2019-01-01&projects%5B0%5D=%2Fprojects%2F1&include_child_projects=1&search_query=meeting&is_running=0&include_project_data=1&include_team_members=0&team_members%5B0%5D=%2Fusers%2F1&page=1\",\"label\":\"1\",\"active\":true},{\"url\":null,\"label\":\"Next &raquo;\",\"active\":false}],\"path\":\"http:\\\/\\\/timing-web.test\\\/api\\\/v1\\\/time-entries\",\"per_page\":1000,\"to\":1,\"total\":1}}",
+                            "name": ""
+                        }
+                    ]
+                },
+                {
+                    "name": "Create time entry.",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/time-entries",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v1\/time-entries"
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"start_date\":\"2019-01-01T00:00:00+00:00\",\"end_date\":\"2019-01-01T01:00:00+00:00\",\"project\":\"Unproductive child project\",\"title\":\"Client Meeting\",\"notes\":\"Some more detailed notes\",\"replace_existing\":false,\"custom_fields\":{\"field_name\":\"field_value\"}}"
+                        },
+                        "description": "<br>Create a new time entry.\n\nSee [Display the specified time entry.](#time-entries-GETapi-v1-time-entries--time_entry_id-) for the returned attributes.\n\n<aside class=\"notice\">\nThe title and project fields can not both be empty.\n<\/aside>"
+                    },
+                    "response": [
+                        {
+                            "header": [
+                                {
+                                    "key": "cache-control",
+                                    "value": "no-cache, private"
+                                },
+                                {
+                                    "key": "content-type",
+                                    "value": "application\/json"
+                                },
+                                {
+                                    "key": "x-ratelimit-limit",
+                                    "value": "500"
+                                },
+                                {
+                                    "key": "x-ratelimit-remaining",
+                                    "value": "495"
+                                },
+                                {
+                                    "key": "access-control-allow-origin",
+                                    "value": "*"
+                                }
+                            ],
+                            "code": 201,
+                            "body": "{\"data\":{\"self\":\"\\\/time-entries\\\/2\",\"start_date\":\"2019-01-01T00:00:00.000000+00:00\",\"end_date\":\"2019-01-01T01:00:00.000000+00:00\",\"duration\":3600,\"project\":{\"self\":\"\\\/projects\\\/2\"},\"title\":\"Client Meeting\",\"notes\":\"Some more detailed notes\",\"is_running\":false,\"creator_id\":\"\\\/users\\\/1\",\"creator_name\":\"Johnny Appleseed\",\"custom_fields\":{\"field_name\":\"field_value\"}}}",
+                            "name": ""
+                        }
+                    ]
+                },
+                {
+                    "name": "Show time entry.",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/time-entries\/:time_entry_id",
+                            "query": [
+                                {
+                                    "key": "other_user_id",
+                                    "value": "%2Fusers%2F1",
+                                    "description": "The ID of the other user must be provided when making changes to the time entries of a colleague. This, along with the user having the required permissions, confirms that changes to the time entries of a colleague are allowed, and that the correct user is being targetted. Without this field, operations for other users will be rejected to prevent accidental changes to other users\u2019 time entries.",
+                                    "disabled": false
+                                }
+                            ],
+                            "raw": "{{baseUrl}}\/api\/v1\/time-entries\/:time_entry_id?other_user_id=%2Fusers%2F1",
+                            "variable": [
+                                {
+                                    "id": "time_entry_id",
+                                    "key": "time_entry_id",
+                                    "value": "1",
+                                    "description": "The ID of the time entry to display."
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "<br>Display the specified time entry.\n\nThe following attributes will be returned:\n\n - `self`: A link to the entity itself, relative to the API root.\n - `start_date`: The time entry's start date and time.\n - `end_date`: The time entry's end date and time.\n - `duration`: The time entry's total duration, in seconds.\n - `project`: The project this time entry is associated with.\n - `title`: The time entry's title.\n - `notes`: The time entry's notes.\n - `is_running`: Whether the time entry is currently running. Only one time entry can be running at any given time."
+                    },
+                    "response": [
+                        {
+                            "header": [
+                                {
+                                    "key": "cache-control",
+                                    "value": "no-cache, private"
+                                },
+                                {
+                                    "key": "content-type",
+                                    "value": "application\/json"
+                                },
+                                {
+                                    "key": "x-ratelimit-limit",
+                                    "value": "500"
+                                },
+                                {
+                                    "key": "x-ratelimit-remaining",
+                                    "value": "494"
+                                },
+                                {
+                                    "key": "access-control-allow-origin",
+                                    "value": "*"
+                                }
+                            ],
+                            "code": 200,
+                            "body": "{\"data\":{\"self\":\"\\\/time-entries\\\/1\",\"start_date\":\"2019-01-01T00:00:00.000000+00:00\",\"end_date\":\"2019-01-01T01:00:00.000000+00:00\",\"duration\":3600,\"project\":{\"self\":\"\\\/projects\\\/1\"},\"title\":\"Client Meeting\",\"notes\":\"Some more detailed notes\",\"is_running\":false,\"creator_id\":\"\\\/users\\\/1\",\"creator_name\":\"Johnny Appleseed\",\"custom_fields\":{}}}",
+                            "name": ""
+                        }
+                    ]
+                },
+                {
+                    "name": "Update time entry.",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/time-entries\/:time_entry_id",
+                            "query": [
+                                {
+                                    "key": "other_user_id",
+                                    "value": "%2Fusers%2F1",
+                                    "description": "The ID of the other user must be provided when making changes to the time entries of a colleague. This, along with the user having the required permissions, confirms that changes to the time entries of a colleague are allowed, and that the correct user is being targetted. Without this field, operations for other users will be rejected to prevent accidental changes to other users\u2019 time entries.",
+                                    "disabled": false
+                                }
+                            ],
+                            "raw": "{{baseUrl}}\/api\/v1\/time-entries\/:time_entry_id?other_user_id=%2Fusers%2F1",
+                            "variable": [
+                                {
+                                    "id": "time_entry_id",
+                                    "key": "time_entry_id",
+                                    "value": "1",
+                                    "description": "The ID of the time entry to update."
+                                }
+                            ]
+                        },
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"start_date\":\"2019-01-01T00:00:00+00:00\",\"end_date\":\"2019-01-01T01:00:00+00:00\",\"project\":\"Unproductive child project\",\"title\":\"Client Meeting\",\"notes\":\"Some more detailed notes\",\"replace_existing\":false,\"custom_fields\":{\"field_name\":\"field_value\"}}"
+                        },
+                        "description": "<br>Update the specified time entry.\n\nSee [Display the specified time entry.](#time-entries-GETapi-v1-time-entries--time_entry_id-) for the returned attributes.\n\n<aside class=\"notice\">\nOmitted fields will not be updated, even when using the `PUT` method.\n<\/aside>\n\n<aside class=\"notice\">\nA time entry's title and project fields can not both be empty.\n<\/aside>"
+                    },
+                    "response": [
+                        {
+                            "header": [
+                                {
+                                    "key": "cache-control",
+                                    "value": "no-cache, private"
+                                },
+                                {
+                                    "key": "content-type",
+                                    "value": "application\/json"
+                                },
+                                {
+                                    "key": "x-ratelimit-limit",
+                                    "value": "500"
+                                },
+                                {
+                                    "key": "x-ratelimit-remaining",
+                                    "value": "493"
+                                },
+                                {
+                                    "key": "access-control-allow-origin",
+                                    "value": "*"
+                                }
+                            ],
+                            "code": 200,
+                            "body": "{\"data\":{\"self\":\"\\\/time-entries\\\/1\",\"start_date\":\"2019-01-01T00:00:00.000000+00:00\",\"end_date\":\"2019-01-01T01:00:00.000000+00:00\",\"duration\":3600,\"project\":{\"self\":\"\\\/projects\\\/2\"},\"title\":\"Client Meeting\",\"notes\":\"Some more detailed notes\",\"is_running\":false,\"creator_id\":\"\\\/users\\\/1\",\"creator_name\":\"Johnny Appleseed\",\"custom_fields\":{\"field_name\":\"field_value\"}}}",
+                            "name": ""
+                        }
+                    ]
+                },
+                {
+                    "name": "Delete time entry.",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v1\/time-entries\/:time_entry_id",
+                            "query": [
+                                {
+                                    "key": "other_user_id",
+                                    "value": "%2Fusers%2F1",
+                                    "description": "The ID of the other user must be provided when making changes to the time entries of a colleague. This, along with the user having the required permissions, confirms that changes to the time entries of a colleague are allowed, and that the correct user is being targetted. Without this field, operations for other users will be rejected to prevent accidental changes to other users\u2019 time entries.",
+                                    "disabled": false
+                                }
+                            ],
+                            "raw": "{{baseUrl}}\/api\/v1\/time-entries\/:time_entry_id?other_user_id=%2Fusers%2F1",
+                            "variable": [
+                                {
+                                    "id": "time_entry_id",
+                                    "key": "time_entry_id",
+                                    "value": "1",
+                                    "description": "The ID of the time entry to delete."
+                                }
+                            ]
+                        },
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "<br>Delete the specified time entry."
+                    },
+                    "response": [
+                        {
+                            "header": [
+                                {
+                                    "key": "cache-control",
+                                    "value": "no-cache, private"
+                                },
+                                {
+                                    "key": "x-ratelimit-limit",
+                                    "value": "500"
+                                },
+                                {
+                                    "key": "x-ratelimit-remaining",
+                                    "value": "492"
+                                },
+                                {
+                                    "key": "access-control-allow-origin",
+                                    "value": "*"
+                                }
+                            ],
+                            "code": 204,
+                            "body": "",
+                            "name": ""
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "auth": {
+        "type": "bearer",
+        "bearer": [
+            {
+                "key": "key",
+                "type": "string"
+            }
+        ]
+    }
+}

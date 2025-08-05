@@ -1,0 +1,1427 @@
+# API Reference
+
+_Generated on: June 18 2025_
+
+# Introduction `(#introduction)`
+
+Welcome to the Timing API reference.
+
+If you prefer a more interactive presentation of the API, you can download our [Postman Collection](/docs/collection.json) and open it in a tool like [Postman](https://www.getpostman.com) or [Paw](https://paw.cloud/docs/migrate/postman#migrate-one-collection-from-postman).
+
+We also offer three Siri shortcuts that demonstrate starting and stopping timers via the API:
+
+- [Start Timing Timer](https://www.icloud.com/shortcuts/d133a34ae0b64fbd9c6754e4b021298a)
+
+- [Start Timing Timer (letting you select a project for the timer first)](https://www.icloud.com/shortcuts/489f0dfba0c6493a850699c79363947c)
+
+- [Start Fixed Timing Timer (letting you enter timer title and project name once)](https://www.icloud.com/shortcuts/6c34c7634382439f9c4fd43cd5065414)
+
+- [Stop Timing Timer](https://www.icloud.com/shortcuts/50dfcc3566774109954be23c5fff8003)
+
+The "Start Fixed Timing Timer" shortcut will ask you once for a combination of timer title and project name. From then on, it will always launch a shortcut with that combination of title and project. You can create several copies of this shortcut (e.g. by duplicating it), each with a different title/project combination.
+
+# Use Cases `(#use-cases)`
+
+## Using AI Tools `(#using-ai-tools)`
+
+If you prefer using an AI assistant to explore or interact with this API, we've provided a simplified version of the documentation in [`LLMs.txt`](/llms.txt). This file is designed to be easily parsed by language models and other AI tools, making it easier to surface relevant information quickly.
+
+You can load the contents of `LLMs.txt` into your preferred AI system to ask questions, generate example code, or better understand how the API works.
+
+## Siri Shortcuts and Automation `(#siri-shortcuts-and-automation)`
+
+Using the Timing API, you can quickly create Siri shortcuts to e.g. start and stop timers. During installation, the shortcuts will ask you for an API which you can generate [in the 'API Keys' section](https://web.timingapp.com/integrations/tokens) of the web app. Once installed, simply run the corresponding shortcut to start or stop a timer.
+
+- [Start Timing Timer](https://www.icloud.com/shortcuts/d133a34ae0b64fbd9c6754e4b021298a)
+
+- [Start Timing Timer (letting you select a project for the timer first)](https://www.icloud.com/shortcuts/489f0dfba0c6493a850699c79363947c)
+
+- [Start Fixed Timing Timer (letting you enter timer title and project name once)](https://www.icloud.com/shortcuts/6c34c7634382439f9c4fd43cd5065414)
+
+- [Stop Timing Timer](https://www.icloud.com/shortcuts/50dfcc3566774109954be23c5fff8003)
+
+The "Start Fixed Timing Timer" shortcut will ask you once for a combination of timer title and project name. From then on, it will always launch a shortcut with that combination of title and project. You can create several copies of this shortcut (e.g. by duplicating it), each with a different title/project combination.
+
+Feel free to customize these shortcuts to your liking, e.g. by changing the "Start Timer" shortcut to let you select from a couple of preset titles instead. We are also interested in the shortcuts you create, so please let us know what you build with this!
+
+You could also create scripts that start or stop a timer whenever you perform a specific action; see [Start a new timer.](#time-entries-POSTapi-v1-time-entries-start) and [Stop the currently running timer.](#time-entries-PUTapi-v1-time-entries-stop) for the corresponding API calls.
+
+## Integrating with your billing system `(#integrating-with-your-billing-system)`
+
+The API also makes it possible to integrate with whatever billing system you are currently using. Simply [retrieve your most recent time entries](#time-entries-GETapi-v1-time-entries), then send them to your billing system in the desired format. You can also create a script to create a custom report in exactly the format you need, of course.
+
+Make sure to have a look at the `?include_project_data=true` query parameter to include the corresponding project's attributes in the response. This lets you retrieve project titles without having to do a second API call to the "Projects" collection.
+
+### GrandTotal integration `(#grandtotal-integration)`
+
+The [GrandTotal plugin for Timing](https://timingapp.com/help/grandtotal) already uses the Timing Web API to import your
+team members' time entries. To use that functionality, please refer [the corresponding section in the documentation](https://timingapp.com/help/grandtotal#toc-adding-team-members-times).
+
+## Zapier integration `(#zapier-integration)`
+
+We also offer a [Zapier](https://zapier.com) integration. This lets you connect the API to thousands of other services with just a few clicks, solving the problems mentioned above without having to write any code. To start using this integration, see the [Zapier section](https://web.timingapp.com/integrations/zapier) in the web app.
+
+Example use cases include:
+
+- Creating projects for your team members whenever a new project is created in your project management system (e.g. Trello, Asana)
+
+- Importing a list of projects for each team member from a Google Spreadsheet
+
+- Automatically sending finished time entries to your billing system
+
+- Automatically exporting your team members' time entries to a Google Spreadsheet
+
+- Sending a message to a Slack channel whenever you start or stop a task
+
+- Emailing you weekly reports of your team members' logged hours
+
+- And much more...
+
+## Contact us `(#contact-us)`
+
+**We also recommend for you to reach out and [let us know your desired use cases](https://timingapp.com/contact)!**
+This helps us prioritize which API features to build first.
+
+# API Usage `(#api-usage)`
+
+The API root is `https://web.timingapp.com/api/v1`. All endpoint URLs share this prefix. Sample code for each available API call can be found in the right-hand column. Note that query parameters need to be URL-encoded, as shown in the Bash example for the [Return a list of time entries.](#time-entries-GETapi-v1-time-entries) call.
+
+## Authentication `(#authentication)`
+
+The Timing API requires authentication with an API key. You can generate a key [in the 'API Keys' section](https://web.timingapp.com/integrations/tokens) of the web app. Once generated, add an `Authorization` header to each request with value `Bearer {{token}}`, where `{{token}}` is your key.
+
+### Rate limiting `(#rate-limiting)`
+
+The API enforces a rate limit of 500 requests per hour. You can retrieve your current quota via the `x-ratelimit-remaining` header attached to every request. In addition, sending more than 200 requests per minute will also trigger a temporary rate limit.
+
+## Request and response data `(#request-and-response-data)`
+
+The API expects requests and returns responses in the JSON format. The actual response payload can be found in the `data` field. Additional data might be provided in the `links` and `meta` fields described below. Refer to the descriptions of individual API calls for concrete examples.
+
+### Repeated fields `(#repeated-fields)`
+
+Query parameters ending with a `[]` can be passed repeatedly. For example, passing `?columns[]=title&columns[]=notes` will show both the "Title" and the "Notes" columns. Optionally, ascending indices can be provided (e.g. `?columns[0]=title&columns[1]=notes`), which makes it easier to build queries in e.g. PHP.
+
+### Date format `(#date-format)`
+
+As Timing is a time-tracking application, its API has to work with many dates. Dates returned by the API will always be formatted as an ISO8601 string including microseconds as well as the time zone, for example `2019-01-01T00:00:00.000000+00:00`.
+
+When sending dates in your requests, we recommend providing dates in a format appropriate to the type of request:
+
+- For time entries, and other requests where the exact time is important, use an ISO8601 format without microseconds but including the time zone, for example `2019-01-01T00:00:00+00:00` or `2019-01-01 00:00:00+00`.
+
+- For requests where the exact time is not important, such as on a report, use a date-only ISO8601 format, for example `2019-01-01`. In this case, the beginning of a date range (e.g. `start_date_min`) will be interpreted as the start of the day in the user's time zone, and the end of a date range (e.g. `start_date_max`), will be interpreted as the end of the day in the user's time zone.
+
+#### Timezone `(#timezone)`
+
+When a timezone is not provided, the default timezone for an unqualified date is assumed to be UTC. For example, `2019-01-01T00:00:00` would be interpreted as `2019-01-01T00:00:00+0000`. This may be subject to change, however, so try to provide a timezone with your request whenever possible.
+
+A default timezone may be provided, using the `X-Time-Zone` header. When this header is set to a valid timezone, any unqualified date is assumed to be in this timezone instead of UTC.
+
+The header only affects input parameters, and all dates are currently returned in UTC. This however may change in the future, so your code should not make any assumptions about this, and always account for the timezone specified in the results.
+
+### References `(#references)`
+
+The Timing API identifies entities via the `self` field, which contains a link relative to the API root, for example `/projects/1`. This avoids any ambiguity about the type of the linked resource and provides you with a convenient way of looking it up, without having to look up the correct API call in this documentation: Simply append the link's value to the API root, resulting in e.g. `https://web.timingapp.com/api/v1/projects/1`.
+
+References should be treated as opaque strings; your code should not assumptions about their structure.
+
+#### Shallow references `(#shallow-references)`
+
+For API responses that contain related entities, these entities are usually referenced in a "shallow" fashion. Instead of including the full object, a placeholder containing only the `self` field is provided, e.g. as `"parent": {"self": "/projects/1"}`. For the [Return a list of time entries.](#time-entries-GETapi-v1-time-entries) call, you can append the `?include_project_data=true` query parameter to include the corresponding project's attributes in the response. This lets you retrieve project titles without having to do a second API call to the "Projects" collection.
+
+### Links `(#links)`
+
+Some responses include links to related queries or entities. This includes pagination and queries for related entries.
+
+#### Pagination `(#pagination)`
+
+By default, collection responses are paginated to 100 items per page. The links to retrieve the first, last, next and previous pages are part of the response's `links` field. Additional information about the paginated data can be found in the `meta` field.
+
+### Custom fields `(#custom-fields)`
+
+Some entities (namely projects and time entries) can have custom fields. These are returned as the `custom_fields` collection, with an entry for each custom field on the entity. Custom fields are intended only for scripting purposes. They are exposed only via the API and are not visible anywhere in the Timing app on your Mac nor the web app.
+
+#### Naming `(#naming)`
+
+Custom field names must be a non-empty string, and may only contain alphanumeric characters, dashes and underscores. Additionally, they must not start with an underscore or contain only digits.
+
+#### Values `(#values)`
+
+Custom field values may only be strings. The only exception to this is providing `null`, which can be provided to remove a custom field.
+
+#### Usage `(#usage)`
+
+Custom fields may be added when creating or updating an entity. When updating an entity, any custom fields not provided will be left untouched. If you want to remove a custom field, you must explicitly set it to `null`.
+
+## API Definitions
+
+If this document doesn't provide all the details you need, refer to the following files for additional context:
+
+- [View Postman collection](/docs/collection.json)
+- [View OpenAPI spec](/docs/openapi.yaml)
+
+## Authentication
+
+## Projects `(#projects)`
+
+### List projects hierarchically. `(#projects-GETapi-v1-projects-hierarchy)`
+
+_Requires authentication_
+
+**GET** `api/v1/projects/hierarchy`
+
+Return the complete project hierarchy.
+
+See [Display the specified project.](#projects-GETapi-v1-projects--project_id-) for the returned attributes.
+
+#### Query Parameters
+
+- **team_id**: string - The ID of the team to list projects for. Can be omitted to list the user's private projects. See [Return a list containing all the teams you are a member of.](#teams-GETapi-v1-teams) for obtaining a team ID to provide here.
+    - Optional
+
+#### Headers
+
+- **Authorization**: `Bearer {{token}}`
+- **Content-Type**: `application/json`
+- **Accept**: `application/json`
+
+#### Response
+
+##### Status: 200
+
+```json
+{
+    "data": [
+        {
+            "self": "/projects/1",
+            "team_id": null,
+            "title": "Project at root level",
+            "title_chain": [
+                "Project at root level"
+            ],
+            "color": "#FF0000",
+            "productivity_score": 1,
+            "is_archived": false,
+            "notes": null,
+            "children": [
+                {
+                    "self": "/projects/2",
+                    "team_id": null,
+                    "title": "Unproductive child project",
+                    "title_chain": [
+                        "Project at root level",
+                        "Unproductive child project"
+                    ],
+                    "color": "#00FF00",
+                    "productivity_score": -1,
+                    "is_archived": false,
+                    "notes": null,
+                    "children": [],
+                    "parent": {
+                        "self": "/projects/1"
+                    },
+                    "custom_fields": {}
+                }
+            ],
+            "parent": null,
+            "custom_fields": {}
+        }
+    ]
+}
+```
+
+###### Headers
+
+- **cache-control**: `no-cache, private`
+- **content-type**: `application/json`
+- **x-ratelimit-limit**: `500`
+- **x-ratelimit-remaining**: `499`
+- **access-control-allow-origin**: `*`
+
+---
+
+### List projects. `(#projects-GETapi-v1-projects)`
+
+_Requires authentication_
+
+**GET** `api/v1/projects`
+
+Return a list containing all projects.
+
+See [Display the specified project.](#projects-GETapi-v1-projects--project_id-) for the returned attributes.
+
+#### Query Parameters
+
+- **title**: string - Filter for projects whose title contains all words in this parameter. The search is case-insensitive but diacritic-sensitive.
+    - Optional
+    - Example: `"root"`
+
+- **hide_archived**: boolean - If set to `1`, archived projects and their children will not be included in the result.
+    - Optional
+    - Example: `"1"`
+
+- **team_id**: string - The ID of the team to list projects for. Can be omitted to list the user's private projects. See [Return a list containing all the teams you are a member of.](#teams-GETapi-v1-teams) for obtaining a team ID to provide here.
+    - Optional
+
+#### Headers
+
+- **Authorization**: `Bearer {{token}}`
+- **Content-Type**: `application/json`
+- **Accept**: `application/json`
+
+#### Response
+
+##### Status: 200
+
+```json
+{
+    "data": [
+        {
+            "self": "/projects/1",
+            "team_id": null,
+            "title": "Project at root level",
+            "title_chain": [
+                "Project at root level"
+            ],
+            "color": "#FF0000",
+            "productivity_score": 1,
+            "is_archived": false,
+            "notes": null,
+            "children": [
+                {
+                    "self": "/projects/2"
+                }
+            ],
+            "parent": null,
+            "custom_fields": {}
+        }
+    ]
+}
+```
+
+###### Headers
+
+- **cache-control**: `no-cache, private`
+- **content-type**: `application/json`
+- **x-ratelimit-limit**: `500`
+- **x-ratelimit-remaining**: `498`
+- **access-control-allow-origin**: `*`
+
+---
+
+### Create project. `(#projects-POSTapi-v1-projects)`
+
+_Requires authentication_
+
+**POST** `api/v1/projects`
+
+Create a new project.
+
+See [Display the specified project.](#projects-GETapi-v1-projects--project_id-) for the returned attributes.
+
+> If you would like to add rules to a project, please [contact us](https://timingapp.com/contact) for advice.
+
+#### Headers
+
+- **Authorization**: `Bearer {{token}}`
+- **Content-Type**: `application/json`
+- **Accept**: `application/json`
+
+#### Body Parameters
+
+- **title**: string - The project's title.
+    - Required
+    - Example: `"Acme Inc."`
+
+- **parent**: string - A reference to an existing project. The new project will be appended to the parent's children. Can be a project reference in the form `"/projects/1"`, a project title (e.g. `"Project at root level"`), or an array with the project's entire title chain (e.g. `["Project at root level", "Unproductive child project"]`).
+    - Optional
+    - Example: `"\/projects\/1"`
+
+- **color**: string - The project's color, in hexadecimal format (`#RRGGBB`). If omitted, a color with random hue, 70% saturation and 100% value will be used.
+    - Optional
+    - Example: `"#FF0000"`
+
+- **productivity_score**: number - The project's productivity rating, between -1 (very unproductive) and 1 (very productive). Defaults to 1.
+    - Optional
+    - Example: `1`
+
+- **is_archived**: boolean - Whether the project has been archived. Defaults to false.
+    - Optional
+    - Example: `false`
+
+- **team_id**: string - The ID of the team to add the project to. See [Return a list containing all the teams you are a member of.](#teams-GETapi-v1-teams) for obtaining a team ID to provide here.
+    - Optional
+
+- **notes**: string - The project's notes.
+    - Optional
+    - Example: `"Some more detailed notes"`
+
+- **custom_fields**: object - A list of custom field name/value pairs to store. For more details, see [Custom fields](#custom-fields).
+    - Optional
+    - Example: `{"field_name":"field_value"}`
+
+#### Response
+
+##### Status: 201
+
+```json
+{
+    "data": {
+        "self": "/projects/2",
+        "team_id": null,
+        "title": "Acme Inc.",
+        "title_chain": [
+            "Project at root level",
+            "Acme Inc."
+        ],
+        "color": "#FF0000",
+        "productivity_score": 1,
+        "is_archived": false,
+        "notes": "Some more detailed notes",
+        "children": [],
+        "parent": {
+            "self": "/projects/1"
+        },
+        "custom_fields": {
+            "field_name": "field_value"
+        }
+    },
+    "links": {
+        "time-entries": "https://web.timingapp.com/api/v1/time-entries?project[]=/projects/2"
+    }
+}
+```
+
+###### Headers
+
+- **cache-control**: `no-cache, private`
+- **content-type**: `application/json`
+- **x-ratelimit-limit**: `500`
+- **x-ratelimit-remaining**: `497`
+- **access-control-allow-origin**: `*`
+
+---
+
+### Show project. `(#projects-GETapi-v1-projects--project_id-)`
+
+_Requires authentication_
+
+**GET** `api/v1/projects/{project_id}`
+
+Display the specified project.
+
+The following attributes will be returned:
+
+ - `self`: A reference to the entity itself, relative to the API root.
+ - `title`: The project's title.
+ - `title_chain`: An array containing the title of the project and all its ancestors. Example: `["Parent", "Child"]`
+ - `color`: The project's color, in hexadecimal format (`#RRGGBB`). Example: `#FF0000`
+ - `productivity_score`: The project's productivity rating, between -1 (very unproductive) and 1 (very productive). Example: `1`
+ - `is_archived`: Whether the project has been archived. Defaults to false. Example: `false`
+ - `parent`: A reference to the enclosing project.
+ - `children`: The project's children.
+ - `team_id`: The ID of the team that this project belongs to, if applicable.
+
+> Child projects are provided as references; i.e. they only contain the `self` attribute.
+
+#### URL Parameters
+
+- **project_id**: string - The ID of the project to display.
+    - Required
+    - Example: `"1"`
+
+#### Headers
+
+- **Authorization**: `Bearer {{token}}`
+- **Content-Type**: `application/json`
+- **Accept**: `application/json`
+
+#### Response
+
+##### Status: 200
+
+```json
+{
+    "data": {
+        "self": "/projects/1",
+        "team_id": null,
+        "title": "Project at root level",
+        "title_chain": [
+            "Project at root level"
+        ],
+        "color": "#FF0000",
+        "productivity_score": 1,
+        "is_archived": false,
+        "notes": null,
+        "children": [
+            {
+                "self": "/projects/2"
+            }
+        ],
+        "parent": null,
+        "custom_fields": {}
+    },
+    "links": {
+        "time-entries": "https://web.timingapp.com/api/v1/time-entries?project[]=/projects/1"
+    }
+}
+```
+
+###### Headers
+
+- **cache-control**: `no-cache, private`
+- **content-type**: `application/json`
+- **x-ratelimit-limit**: `500`
+- **x-ratelimit-remaining**: `496`
+- **access-control-allow-origin**: `*`
+
+---
+
+### Update project. `(#projects-PUTapi-v1-projects--project_id-)`
+
+_Requires authentication_
+
+**PUT** `api/v1/projects/{project_id}`
+
+Update the specified project.
+
+See [Display the specified project.](#projects-GETapi-v1-projects--project_id-) for the returned attributes.
+
+> Omitted fields will not be updated, even when using the `PUT` method.
+
+> Changing a project's parent or children is currently not possible.
+
+> If you would like to add rules to a project, please [contact us](https://timingapp.com/contact) for advice.
+
+#### URL Parameters
+
+- **project_id**: string - The ID of the project to update.
+    - Required
+    - Example: `"1"`
+
+#### Headers
+
+- **Authorization**: `Bearer {{token}}`
+- **Content-Type**: `application/json`
+- **Accept**: `application/json`
+
+#### Body Parameters
+
+- **title**: string - The project's title.
+    - Required
+    - Example: `"Acme Inc."`
+
+- **color**: string - The project's color, in hexadecimal format (`#RRGGBB`).
+    - Optional
+    - Example: `"#FF0000"`
+
+- **productivity_score**: number - The project's productivity rating, between -1 (very unproductive) and 1 (very productive).
+    - Optional
+    - Example: `1`
+
+- **is_archived**: boolean - Whether the project has been archived.
+    - Optional
+    - Example: `false`
+
+- **notes**: string - The project's notes.
+    - Optional
+    - Example: `"Some more detailed notes"`
+
+- **custom_fields**: object - A list of custom field name/value pairs to update. For more details, see [Custom fields](#custom-fields).
+    - Optional
+    - Example: `{"field_name":"field_value"}`
+
+#### Response
+
+##### Status: 200
+
+```json
+{
+    "data": {
+        "self": "/projects/1",
+        "team_id": null,
+        "title": "Acme Inc.",
+        "title_chain": [
+            "Acme Inc."
+        ],
+        "color": "#FF0000",
+        "productivity_score": 1,
+        "is_archived": false,
+        "notes": "Some more detailed notes",
+        "children": [
+            {
+                "self": "/projects/2"
+            }
+        ],
+        "parent": null,
+        "custom_fields": {
+            "field_name": "field_value"
+        }
+    },
+    "links": {
+        "time-entries": "https://web.timingapp.com/api/v1/time-entries?project[]=/projects/1"
+    }
+}
+```
+
+###### Headers
+
+- **cache-control**: `no-cache, private`
+- **content-type**: `application/json`
+- **x-ratelimit-limit**: `500`
+- **x-ratelimit-remaining**: `495`
+- **access-control-allow-origin**: `*`
+
+---
+
+### Delete project. `(#projects-DELETEapi-v1-projects--project_id-)`
+
+_Requires authentication_
+
+**DELETE** `api/v1/projects/{project_id}`
+
+Delete the specified project and all of its children.
+
+#### URL Parameters
+
+- **project_id**: string - The ID of the project to delete.
+    - Required
+    - Example: `"1"`
+
+#### Headers
+
+- **Authorization**: `Bearer {{token}}`
+- **Content-Type**: `application/json`
+- **Accept**: `application/json`
+
+#### Response
+
+---
+
+## Reports `(#reports)`
+
+### Generate report. `(#reports-GETapi-v1-report)`
+
+_Requires authentication_
+
+**GET** `api/v1/report`
+
+Generate a report that can contain both time entries and app usage.
+
+Returns a JSON array with several rows; each row includes the total duration (in seconds) belonging to the
+corresponding other (configurable) columns.
+
+The `include_app_usage` and `include_team_members` parameters govern whether to include app usage (otherwise, only time entries are returned) as well as data for other team members.
+
+The `start_date_min`, `start_date_max`, `projects`(also see `include_child_projects`) and `search_query` parameters allow filtering the returned data.
+
+The `columns`, `project_grouping_level`, `include_project_data`, `timespan_grouping_mode`, and `sort` parameters govern the presentation of the returned data.
+
+> Fetching large amounts of app usage can put a substantial amount of load on our servers, so please be mindful before frequently requesting large amounts of data using this API.
+
+> If no date range filter is provided by setting *both* `start_date_min` *and* `start_date_max`,
+this query returns all time entries between midnight (UTC) 30 days ago and end of day (UTC) today.
+
+#### Query Parameters
+
+- **include_app_usage**: boolean - Whether to include app usage in the report. If false, only time entries are returned. Default: `0`
+    - Optional
+    - Example: `"0"`
+
+- **include_team_members**: boolean - If true, the response will also contain time entries that belong to other team members, provided the current user has permission to view them. Default: `0`
+    - Optional
+    - Example: `"0"`
+
+- **team_members**: string[] - Restricts the query to data associated with the given user. Can be repeated to include time entries from several users.
+    - Optional
+    - Example: `["\/users\/1"]`
+
+- **start_date_min**: string - Restricts the query to data whose start date is equal to or later than this parameter.
+    - Optional
+    - Example: `"2019-01-01"`
+
+- **start_date_max**: string - Restricts the query to data whose start date is equal to or earlier than this parameter.
+    - Optional
+    - Example: `"2019-01-01"`
+
+- **projects**: string[] - Restricts the query to data associated with the given project. Can be repeated to include time entries from several projects. If you would like to include time entries that are not assigned to any project, you can provide an empty string, i.e. `projects[]=`
+    - Optional
+    - Example: `["\/projects\/1"]`
+
+- **include_child_projects**: boolean - If true, the response will also contain time entries that belong to any child projects of the ones provided in `projects[]`. Default: `0`
+    - Optional
+    - Example: `"1"`
+
+- **search_query**: string - Restricts the query to time entries whose title and/or notes contain all words in this parameter. The search is case-insensitive but diacritic-sensitive. Note: this parameter can not be used when app usage is included.
+    - Optional
+    - Example: `"meeting"`
+
+- **columns**: string[] - Which columns to show. Can be repeated to provide multiple columns. The `user` column is ignored if `include_team_members` is false. Possible values: `project`, `title`, `notes`, `timespan`, `user`. Default: `user`, `project`, `title`. `start_date` and `end_date` is shown when `timespan` column is sent.
+    - Optional
+    - Example: `["project"]`
+
+- **project_grouping_level**: integer - When this argument is provided, report lines for projects below the given level will be aggregated by their parent project on the given level. For example, when `project_grouping_level` is 0, all times in sub-projects will be counted towards the corresponding project on the "root" (i.e. highest) level in the project tree. Can be a non-negative integer or -1. The default is -1, which indicates no grouping (i.e. all projects will be returned, regardless of how deep they are in the hierarchy). Requires `columns[]` to contain `project`.
+    - Optional
+    - Example: `"0"`
+
+- **include_project_data**: boolean - If true, the properties of each line's project will be included in the response. Requires `columns[]` to contain `project`. Default: `0`
+    - Optional
+    - Example: `"1"`
+
+- **timespan_grouping_mode**: string - When this argument is provided, report lines will be aggregated according to the given calendar unit. Possible values: `exact`, `day`, `week`, `month`, `year`. Default: `exact`
+    - Optional
+    - Example: `"day"`
+
+- **sort**: string[] - Sort the results ascending by the given column; for descending order prefix the column name with a minus sign. Can be repeated to provide multiple sort columns. Default: `-duration`. Examples: `sort[]=-duration` -> Sort descending by duration. `sort[]=user&sort[]=-duration` -> Sort ascending by user, then descending by duration.
+    - Optional
+    - Example: `["-duration"]`
+
+#### Headers
+
+- **Authorization**: `Bearer {{token}}`
+- **Content-Type**: `application/json`
+- **Accept**: `application/json`
+
+#### Response
+
+##### Status: 200
+
+```json
+{
+    "data": [
+        {
+            "duration": 3600,
+            "project": {
+                "self": "/projects/1",
+                "team_id": null,
+                "title": "Project at root level",
+                "title_chain": [
+                    "Project at root level"
+                ],
+                "color": "#FF0000",
+                "productivity_score": 1,
+                "is_archived": false,
+                "notes": null,
+                "parent": null,
+                "custom_fields": {}
+            }
+        }
+    ]
+}
+```
+
+###### Headers
+
+- **cache-control**: `no-cache, private`
+- **content-type**: `application/json`
+- **x-ratelimit-limit**: `500`
+- **x-ratelimit-remaining**: `489`
+- **access-control-allow-origin**: `*`
+
+---
+
+## Teams `(#teams)`
+
+### List team members. `(#teams-GETapi-v1-teams--team_id--members)`
+
+_Requires authentication_
+
+**GET** `api/v1/teams/{team_id}/members`
+
+Return a list containing all active members of the given team.
+
+Members with pending invitations will be excluded.
+
+The following attributes will be returned:
+
+ - `self`: A reference to the entity itself, relative to the API root.
+ - `email`: The team member's email address.
+ - `name`: The team member's name. May be null if the team member has not entered a name in their account profile.
+
+#### URL Parameters
+
+- **team_id**: string - The ID of the team to list members for.
+    - Required
+    - Example: `"1"`
+
+#### Headers
+
+- **Authorization**: `Bearer {{token}}`
+- **Content-Type**: `application/json`
+- **Accept**: `application/json`
+
+#### Response
+
+##### Status: 200
+
+```json
+{
+    "data": [
+        {
+            "self": "/users/1",
+            "email": "johnny@appleseed.net",
+            "name": "Johnny Appleseed"
+        }
+    ]
+}
+```
+
+###### Headers
+
+- **cache-control**: `no-cache, private`
+- **content-type**: `application/json`
+- **x-ratelimit-limit**: `500`
+- **x-ratelimit-remaining**: `491`
+- **access-control-allow-origin**: `*`
+
+---
+
+### List teams. `(#teams-GETapi-v1-teams)`
+
+_Requires authentication_
+
+**GET** `api/v1/teams`
+
+Return a list containing all the teams you are a member of.
+
+#### Headers
+
+- **Authorization**: `Bearer {{token}}`
+- **Content-Type**: `application/json`
+- **Accept**: `application/json`
+
+#### Response
+
+##### Status: 200
+
+```json
+{
+    "data": [
+        {
+            "id": "/teams/1",
+            "name": "Demo Team"
+        }
+    ]
+}
+```
+
+###### Headers
+
+- **cache-control**: `no-cache, private`
+- **content-type**: `application/json`
+- **x-ratelimit-limit**: `500`
+- **x-ratelimit-remaining**: `490`
+- **access-control-allow-origin**: `*`
+
+---
+
+## Time Entries `(#time-entries)`
+
+### Start timer. `(#time-entries-POSTapi-v1-time-entries-start)`
+
+_Requires authentication_
+
+**POST** `api/v1/time-entries/start`
+
+Start a new timer.
+
+This also stops the currently running timer if there is one.
+
+See [Display the specified time entry.](#time-entries-GETapi-v1-time-entries--time_entry_id-) for the returned attributes.
+
+> The title and project fields can not both be empty.
+
+#### Headers
+
+- **Authorization**: `Bearer {{token}}`
+- **Content-Type**: `application/json`
+- **Accept**: `application/json`
+
+#### Body Parameters
+
+- **start_date**: string - The date this timer should have started at. Defaults to "now".
+    - Optional
+    - Example: `"2019-01-01T00:00:00+00:00"`
+
+- **project**: string - The project this timer is associated with. Can be a project reference in the form `"/projects/1"`, a project title (e.g. `"Project at root level"`), or an array with the project's entire title chain (e.g. `["Project at root level", "Unproductive child project"]`).
+    - Optional
+    - Example: `"Unproductive child project"`
+
+- **title**: string - The timer's title.
+    - Optional
+    - Example: `"Client Meeting"`
+
+- **notes**: string - The timer's notes.
+    - Optional
+    - Example: `"Some more detailed notes"`
+
+- **replace_existing**: boolean - If true, any existing time entries that overlap with the new time entry will be adjusted to avoid overlap, or deleted altogether. Defaults to false.
+    - Optional
+    - Example: `false`
+
+- **custom_fields**: object - A list of custom field name/value pairs to store. For more details, see [Custom fields](#custom-fields).
+    - Optional
+    - Example: `{"field_name":"field_value"}`
+
+#### Response
+
+##### Status: 201
+
+```json
+{
+    "data": {
+        "self": "/time-entries/2",
+        "start_date": "2019-01-01T00:00:00.000000+00:00",
+        "end_date": "2019-01-01T00:00:00.000000+00:00",
+        "duration": 0,
+        "project": {
+            "self": "/projects/2"
+        },
+        "title": "Client Meeting",
+        "notes": "Some more detailed notes",
+        "is_running": true,
+        "creator_id": "/users/1",
+        "creator_name": "Johnny Appleseed",
+        "custom_fields": {
+            "field_name": "field_value"
+        }
+    },
+    "message": "Timer 'Client Meeting' started."
+}
+```
+
+###### Headers
+
+- **cache-control**: `no-cache, private`
+- **content-type**: `application/json`
+- **x-ratelimit-limit**: `500`
+- **x-ratelimit-remaining**: `493`
+- **access-control-allow-origin**: `*`
+
+---
+
+### Stop timer. `(#time-entries-PUTapi-v1-time-entries-stop)`
+
+_Requires authentication_
+
+**PUT** `api/v1/time-entries/stop`
+
+Stop the currently running timer.
+
+Returns the stopped timer's attributes as listed under [Display the specified time entry.](#time-entries-GETapi-v1-time-entries--time_entry_id-).
+
+#### Headers
+
+- **Authorization**: `Bearer {{token}}`
+- **Content-Type**: `application/json`
+- **Accept**: `application/json`
+
+#### Response
+
+##### Status: 200
+
+```json
+{
+    "data": {
+        "self": "/time-entries/1",
+        "start_date": "2019-01-01T00:00:00.000000+00:00",
+        "end_date": "2019-01-01T01:00:00.000000+00:00",
+        "duration": 3600,
+        "project": {
+            "self": "/projects/1"
+        },
+        "title": "Client Meeting",
+        "notes": "Some more detailed notes",
+        "is_running": false,
+        "creator_id": "/users/1",
+        "creator_name": "Johnny Appleseed",
+        "custom_fields": {}
+    },
+    "message": "Timer 'Client Meeting' stopped."
+}
+```
+
+###### Headers
+
+- **cache-control**: `no-cache, private`
+- **content-type**: `application/json`
+- **x-ratelimit-limit**: `500`
+- **x-ratelimit-remaining**: `499`
+- **access-control-allow-origin**: `*`
+
+---
+
+### Show latest time entry. `(#time-entries-GETapi-v1-time-entries-latest)`
+
+_Requires authentication_
+
+**GET** `api/v1/time-entries/latest`
+
+Redirect to the latest time entry.
+
+See [Display the specified time entry.](#time-entries-GETapi-v1-time-entries--time_entry_id-) for the route the
+redirect points to.
+
+> If no time entry is found, a 404 response will be returned.
+
+> This route is only available for `GET` requests. If you'd like to e.g. *edit* the latest time
+entry, use this route to retrieve a link to the desired entry, then use that link to assemble a new request for
+the desired action.
+
+#### Headers
+
+- **Authorization**: `Bearer {{token}}`
+- **Content-Type**: `application/json`
+- **Accept**: `application/json`
+
+#### Response
+
+---
+
+### Show running timer. `(#time-entries-GETapi-v1-time-entries-running)`
+
+**GET** `api/v1/time-entries/running`
+
+Redirect to the currently running timer.
+
+See [Display the specified time entry.](#time-entries-GETapi-v1-time-entries--time_entry_id-) for the route the
+redirect points to.
+
+> If no timer is currently running, a 404 response will be returned.
+
+> This route is only available for `GET` requests. If you'd like to e.g. *edit* the latest time
+entry, use this route to retrieve a link to the desired entry, then use that link to assemble a new request for
+the desired action.
+
+#### Headers
+
+- **Authorization**: `Bearer {{token}}`
+- **Content-Type**: `application/json`
+- **Accept**: `application/json`
+
+#### Response
+
+---
+
+### List time entries. `(#time-entries-GETapi-v1-time-entries)`
+
+_Requires authentication_
+
+**GET** `api/v1/time-entries`
+
+Return a list of time entries.
+
+See [Display the specified time entry.](#time-entries-GETapi-v1-time-entries--time_entry_id-) for the returned attributes.
+
+Items are ordered descending by their `start_date` field.
+
+> If no date range filter is provided by setting *both* `start_date_min` *and* `start_date_max`,
+this query returns all time entries between midnight (UTC) 30 days ago and end of day (UTC) today.
+
+#### Query Parameters
+
+- **start_date_min**: string - Restricts the query to time entries whose start date is equal to or later than this parameter.
+    - Optional
+    - Example: `"2019-01-01"`
+
+- **start_date_max**: string - Restricts the query to time entries whose start date is equal to or earlier than this parameter.
+    - Optional
+    - Example: `"2019-01-01"`
+
+- **projects**: string[] - Restricts the query to time entries associated with the given project. Can be repeated to include time entries from several projects. If you would like to include time entries that are not assigned to any project, you can provide an empty string, i.e. `projects[]=`
+    - Optional
+    - Example: `["\/projects\/1"]`
+
+- **include_child_projects**: boolean - If true, the response will also contain time entries that belong to any child projects of the ones provided in `projects[]`. Default: `0`
+    - Optional
+    - Example: `"1"`
+
+- **search_query**: string - Restricts the query to time entries whose title and/or notes contain all words in this parameter. The search is case-insensitive but diacritic-sensitive.
+    - Optional
+    - Example: `"meeting"`
+
+- **is_running**: boolean - If provided, returns only time entries that are either running or not running. Default: `0`
+    - Optional
+    - Example: `"0"`
+
+- **include_project_data**: boolean - If true, the properties of the time entry's project will be included in the response. Default: `0`
+    - Optional
+    - Example: `"1"`
+
+- **include_team_members**: boolean - If true, the response will also contain time entries that belong to other team members, provided the current user has permission to view them. Default: `0`
+    - Optional
+    - Example: `"0"`
+
+- **team_members**: string[] - Restricts the query to data associated with the given user. Can be repeated to include time entries from several users.
+    - Optional
+    - Example: `["\/users\/1"]`
+
+#### Headers
+
+- **Authorization**: `Bearer {{token}}`
+- **Content-Type**: `application/json`
+- **Accept**: `application/json`
+
+#### Response
+
+##### Status: 200
+
+```json
+{
+    "data": [
+        {
+            "self": "/time-entries/1",
+            "start_date": "2019-01-01T00:00:00.000000+00:00",
+            "end_date": "2019-01-01T01:00:00.000000+00:00",
+            "duration": 3600,
+            "project": {
+                "self": "/projects/1",
+                "team_id": null,
+                "title": "Project at root level",
+                "title_chain": [
+                    "Project at root level"
+                ],
+                "color": "#FF0000",
+                "productivity_score": 1,
+                "is_archived": false,
+                "notes": null,
+                "parent": null,
+                "custom_fields": {}
+            },
+            "title": "Client Meeting",
+            "notes": "Some more detailed notes",
+            "is_running": false,
+            "creator_id": "/users/1",
+            "creator_name": "Johnny Appleseed",
+            "custom_fields": {}
+        }
+    ],
+    "links": {
+        "first": "http://timing-web.test/api/v1/time-entries?start_date_min=2019-01-01&start_date_max=2019-01-01&projects%5B0%5D=%2Fprojects%2F1&include_child_projects=1&search_query=meeting&is_running=0&include_project_data=1&include_team_members=0&team_members%5B0%5D=%2Fusers%2F1&page=1",
+        "last": "http://timing-web.test/api/v1/time-entries?start_date_min=2019-01-01&start_date_max=2019-01-01&projects%5B0%5D=%2Fprojects%2F1&include_child_projects=1&search_query=meeting&is_running=0&include_project_data=1&include_team_members=0&team_members%5B0%5D=%2Fusers%2F1&page=1",
+        "prev": null,
+        "next": null
+    },
+    "meta": {
+        "current_page": 1,
+        "from": 1,
+        "last_page": 1,
+        "links": [
+            {
+                "url": null,
+                "label": "Â« Previous",
+                "active": false
+            },
+            {
+                "url": "http://timing-web.test/api/v1/time-entries?start_date_min=2019-01-01&start_date_max=2019-01-01&projects%5B0%5D=%2Fprojects%2F1&include_child_projects=1&search_query=meeting&is_running=0&include_project_data=1&include_team_members=0&team_members%5B0%5D=%2Fusers%2F1&page=1",
+                "label": "1",
+                "active": true
+            },
+            {
+                "url": null,
+                "label": "Next Â»",
+                "active": false
+            }
+        ],
+        "path": "http://timing-web.test/api/v1/time-entries",
+        "per_page": 1000,
+        "to": 1,
+        "total": 1
+    }
+}
+```
+
+###### Headers
+
+- **cache-control**: `no-cache, private`
+- **content-type**: `application/json`
+- **x-ratelimit-limit**: `500`
+- **x-ratelimit-remaining**: `496`
+- **access-control-allow-origin**: `*`
+
+---
+
+### Create time entry. `(#time-entries-POSTapi-v1-time-entries)`
+
+_Requires authentication_
+
+**POST** `api/v1/time-entries`
+
+Create a new time entry.
+
+See [Display the specified time entry.](#time-entries-GETapi-v1-time-entries--time_entry_id-) for the returned attributes.
+
+> The title and project fields can not both be empty.
+
+#### Headers
+
+- **Authorization**: `Bearer {{token}}`
+- **Content-Type**: `application/json`
+- **Accept**: `application/json`
+
+#### Body Parameters
+
+- **start_date**: string - The time entry's start date and time.
+    - Required
+    - Example: `"2019-01-01T00:00:00+00:00"`
+
+- **end_date**: string - The time entry's end date and time.
+    - Required
+    - Example: `"2019-01-01T01:00:00+00:00"`
+
+- **project**: string - The project this time entry is associated with. Can be a project reference in the form `"/projects/1"`, a project title (e.g. `"Project at root level"`), or an array with the project's entire title chain (e.g. `["Project at root level", "Unproductive child project"]`).
+    - Optional
+    - Example: `"Unproductive child project"`
+
+- **title**: string - The time entry's title.
+    - Optional
+    - Example: `"Client Meeting"`
+
+- **notes**: string - The time entry's notes.
+    - Optional
+    - Example: `"Some more detailed notes"`
+
+- **replace_existing**: boolean - If true, any existing time entries that overlap with the new time entry will be adjusted to avoid overlap, or deleted altogether. Defaults to false.
+    - Optional
+    - Example: `false`
+
+- **custom_fields**: object - A list of custom field name/value pairs to store. For more details, see [Custom fields](#custom-fields).
+    - Optional
+    - Example: `{"field_name":"field_value"}`
+
+#### Response
+
+##### Status: 201
+
+```json
+{
+    "data": {
+        "self": "/time-entries/2",
+        "start_date": "2019-01-01T00:00:00.000000+00:00",
+        "end_date": "2019-01-01T01:00:00.000000+00:00",
+        "duration": 3600,
+        "project": {
+            "self": "/projects/2"
+        },
+        "title": "Client Meeting",
+        "notes": "Some more detailed notes",
+        "is_running": false,
+        "creator_id": "/users/1",
+        "creator_name": "Johnny Appleseed",
+        "custom_fields": {
+            "field_name": "field_value"
+        }
+    }
+}
+```
+
+###### Headers
+
+- **cache-control**: `no-cache, private`
+- **content-type**: `application/json`
+- **x-ratelimit-limit**: `500`
+- **x-ratelimit-remaining**: `495`
+- **access-control-allow-origin**: `*`
+
+---
+
+### Show time entry. `(#time-entries-GETapi-v1-time-entries--time_entry_id-)`
+
+_Requires authentication_
+
+**GET** `api/v1/time-entries/{time_entry_id}`
+
+Display the specified time entry.
+
+The following attributes will be returned:
+
+ - `self`: A link to the entity itself, relative to the API root.
+ - `start_date`: The time entry's start date and time.
+ - `end_date`: The time entry's end date and time.
+ - `duration`: The time entry's total duration, in seconds.
+ - `project`: The project this time entry is associated with.
+ - `title`: The time entry's title.
+ - `notes`: The time entry's notes.
+ - `is_running`: Whether the time entry is currently running. Only one time entry can be running at any given time.
+
+#### URL Parameters
+
+- **time_entry_id**: string - The ID of the time entry to display.
+    - Required
+    - Example: `"1"`
+
+#### Query Parameters
+
+- **other_user_id**: string - The ID of the other user must be provided when making changes to the time entries of a colleague. This, along with the user having the required permissions, confirms that changes to the time entries of a colleague are allowed, and that the correct user is being targetted. Without this field, operations for other users will be rejected to prevent accidental changes to other usersâ€™ time entries.
+    - Optional
+    - Example: `"\/users\/1"`
+
+#### Headers
+
+- **Authorization**: `Bearer {{token}}`
+- **Content-Type**: `application/json`
+- **Accept**: `application/json`
+
+#### Response
+
+##### Status: 200
+
+```json
+{
+    "data": {
+        "self": "/time-entries/1",
+        "start_date": "2019-01-01T00:00:00.000000+00:00",
+        "end_date": "2019-01-01T01:00:00.000000+00:00",
+        "duration": 3600,
+        "project": {
+            "self": "/projects/1"
+        },
+        "title": "Client Meeting",
+        "notes": "Some more detailed notes",
+        "is_running": false,
+        "creator_id": "/users/1",
+        "creator_name": "Johnny Appleseed",
+        "custom_fields": {}
+    }
+}
+```
+
+###### Headers
+
+- **cache-control**: `no-cache, private`
+- **content-type**: `application/json`
+- **x-ratelimit-limit**: `500`
+- **x-ratelimit-remaining**: `494`
+- **access-control-allow-origin**: `*`
+
+---
+
+### Update time entry. `(#time-entries-PUTapi-v1-time-entries--time_entry_id-)`
+
+_Requires authentication_
+
+**PUT** `api/v1/time-entries/{time_entry_id}`
+
+Update the specified time entry.
+
+See [Display the specified time entry.](#time-entries-GETapi-v1-time-entries--time_entry_id-) for the returned attributes.
+
+> Omitted fields will not be updated, even when using the `PUT` method.
+
+> A time entry's title and project fields can not both be empty.
+
+#### URL Parameters
+
+- **time_entry_id**: string - The ID of the time entry to update.
+    - Required
+    - Example: `"1"`
+
+#### Query Parameters
+
+- **other_user_id**: string - The ID of the other user must be provided when making changes to the time entries of a colleague. This, along with the user having the required permissions, confirms that changes to the time entries of a colleague are allowed, and that the correct user is being targetted. Without this field, operations for other users will be rejected to prevent accidental changes to other usersâ€™ time entries.
+    - Optional
+    - Example: `"\/users\/1"`
+
+#### Headers
+
+- **Authorization**: `Bearer {{token}}`
+- **Content-Type**: `application/json`
+- **Accept**: `application/json`
+
+#### Body Parameters
+
+- **start_date**: string - The time entry's start date and time.
+    - Optional
+    - Example: `"2019-01-01T00:00:00+00:00"`
+
+- **end_date**: string - The time entry's start date and time.
+    - Optional
+    - Example: `"2019-01-01T01:00:00+00:00"`
+
+- **project**: string - The project this time entry is associated with. Can be a project reference in the form `"/projects/1"`, a project title (e.g. `"Project at root level"`), or an array with the project's entire title chain (e.g. `["Project at root level", "Unproductive child project"]`).
+    - Optional
+    - Example: `"Unproductive child project"`
+
+- **title**: string - The time entry's title.
+    - Optional
+    - Example: `"Client Meeting"`
+
+- **notes**: string - The time entry's notes.
+    - Optional
+    - Example: `"Some more detailed notes"`
+
+- **replace_existing**: boolean - If true and the entry's start or end date has changed, any existing time entries that overlap with the updated time entry will be adjusted to avoid overlap, or deleted altogether. Defaults to false.
+    - Optional
+    - Example: `false`
+
+- **custom_fields**: object - A list of custom field name/value pairs to update. For more details, see [Custom fields](#custom-fields).
+    - Optional
+    - Example: `{"field_name":"field_value"}`
+
+#### Response
+
+##### Status: 200
+
+```json
+{
+    "data": {
+        "self": "/time-entries/1",
+        "start_date": "2019-01-01T00:00:00.000000+00:00",
+        "end_date": "2019-01-01T01:00:00.000000+00:00",
+        "duration": 3600,
+        "project": {
+            "self": "/projects/2"
+        },
+        "title": "Client Meeting",
+        "notes": "Some more detailed notes",
+        "is_running": false,
+        "creator_id": "/users/1",
+        "creator_name": "Johnny Appleseed",
+        "custom_fields": {
+            "field_name": "field_value"
+        }
+    }
+}
+```
+
+###### Headers
+
+- **cache-control**: `no-cache, private`
+- **content-type**: `application/json`
+- **x-ratelimit-limit**: `500`
+- **x-ratelimit-remaining**: `493`
+- **access-control-allow-origin**: `*`
+
+---
+
+### Delete time entry. `(#time-entries-DELETEapi-v1-time-entries--time_entry_id-)`
+
+_Requires authentication_
+
+**DELETE** `api/v1/time-entries/{time_entry_id}`
+
+Delete the specified time entry.
+
+#### URL Parameters
+
+- **time_entry_id**: string - The ID of the time entry to delete.
+    - Required
+    - Example: `"1"`
+
+#### Query Parameters
+
+- **other_user_id**: string - The ID of the other user must be provided when making changes to the time entries of a colleague. This, along with the user having the required permissions, confirms that changes to the time entries of a colleague are allowed, and that the correct user is being targetted. Without this field, operations for other users will be rejected to prevent accidental changes to other usersâ€™ time entries.
+    - Optional
+    - Example: `"\/users\/1"`
+
+#### Headers
+
+- **Authorization**: `Bearer {{token}}`
+- **Content-Type**: `application/json`
+- **Accept**: `application/json`
+
+#### Response
+
+---
+
