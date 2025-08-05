@@ -1,0 +1,286 @@
+{
+  "name": "Enhanced Timing App to Jira Workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 30
+            }
+          ]
+        }
+      },
+      "id": "cron-trigger",
+      "name": "Cron Trigger",
+      "type": "n8n-nodes-base.cron",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "command": "python3",
+        "arguments": "enhanced_jira_matcher.py",
+        "options": {}
+      },
+      "id": "enhanced-analyzer",
+      "name": "Enhanced Work Analyzer",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "has-activity",
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "processed",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "check-processed",
+      "name": "Check if Work Processed",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "resource": "issue",
+        "operation": "getAll",
+        "jql": "assignee = currentUser() AND status IN ('In Progress', 'To Do', 'In Review') ORDER BY updated DESC",
+        "returnAll": false,
+        "limit": 50,
+        "options": {}
+      },
+      "id": "get-my-tickets",
+      "name": "Get My Jira Tickets",
+      "type": "n8n-nodes-base.jira",
+      "typeVersion": 1,
+      "position": [680, 100],
+      "credentials": {
+        "jiraApi": {
+          "id": "jira-credentials",
+          "name": "Jira API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "has-matches",
+              "leftValue": "={{ $json.matches_found }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "check-matches",
+      "name": "Check for Matches",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [900, 200]
+    },
+    {
+      "parameters": {
+        "resource": "issueComment",
+        "operation": "create",
+        "issueId": "={{ $json.updates[0].ticket }}",
+        "body": "Work session completed and matched to this ticket:\n\n**Work Summary:** {{ $json.updates[0].summary }}\n\n**Time Spent:** {{ Math.floor($json.updates[0].time_spent / 3600) }}h {{ Math.floor(($json.updates[0].time_spent % 3600) / 60) }}m\n\n**Match Confidence:** {{ Math.round($json.updates[0].confidence * 100) }}%\n\n*Auto-updated by Timing App integration*"
+      },
+      "id": "add-matched-comment",
+      "name": "Add Matched Work Comment",
+      "type": "n8n-nodes-base.jira",
+      "typeVersion": 1,
+      "position": [1120, 100],
+      "credentials": {
+        "jiraApi": {
+          "id": "jira-credentials",
+          "name": "Jira API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "issue",
+        "operation": "update",
+        "issueId": "={{ $json.updates[0].ticket }}",
+        "updateFields": {
+          "summary": "={{ $json.updates[0].summary }} (Updated with work progress)",
+          "description": "Work progress updated:\n\n{{ $json.updates[0].summary }}\n\n**Time spent:** {{ Math.floor($json.updates[0].time_spent / 3600) }}h {{ Math.floor(($json.updates[0].time_spent % 3600) / 60) }}m\n**Match confidence:** {{ Math.round($json.updates[0].confidence * 100) }}%\n\n*Auto-updated by Timing App integration*"
+        }
+      },
+      "id": "update-matched-ticket",
+      "name": "Update Matched Ticket",
+      "type": "n8n-nodes-base.jira",
+      "typeVersion": 1,
+      "position": [1120, 200],
+      "credentials": {
+        "jiraApi": {
+          "id": "jira-credentials",
+          "name": "Jira API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "message": "Work detected but no matching Jira tickets found. Consider creating a new ticket or manually assigning work."
+      },
+      "id": "no-matches",
+      "name": "No Matches Found",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [1120, 300]
+    },
+    {
+      "parameters": {
+        "message": "No recent work activity detected in the last 2 hours."
+      },
+      "id": "no-activity",
+      "name": "No Activity",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [900, 400]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Create a summary of available tickets for debugging\nconst tickets = $input.all()[0].json.issues || [];\nconst summary = {\n  total_tickets: tickets.length,\n  tickets_by_status: {},\n  tickets_by_type: {},\n  recent_tickets: tickets.slice(0, 5).map(t => ({\n    key: t.key,\n    summary: t.fields.summary,\n    status: t.fields.status.name,\n    type: t.fields.issuetype.name\n  }))\n};\n\n// Count by status\ntickets.forEach(ticket => {\n  const status = ticket.fields.status.name;\n  summary.tickets_by_status[status] = (summary.tickets_by_status[status] || 0) + 1;\n});\n\n// Count by type\ntickets.forEach(ticket => {\n  const type = ticket.fields.issuetype.name;\n  summary.tickets_by_type[type] = (summary.tickets_by_type[type] || 0) + 1;\n});\n\nreturn {\n  json: {\n    summary,\n    message: `Found ${summary.total_tickets} tickets assigned to you. Recent tickets: ${summary.recent_tickets.map(t => t.key).join(', ')}`\n  }\n};"
+      },
+      "id": "summarize-tickets",
+      "name": "Summarize Available Tickets",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [900, 100]
+    }
+  ],
+  "connections": {
+    "Cron Trigger": {
+      "main": [
+        [
+          {
+            "node": "Enhanced Work Analyzer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enhanced Work Analyzer": {
+      "main": [
+        [
+          {
+            "node": "Check if Work Processed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check if Work Processed": {
+      "main": [
+        [
+          {
+            "node": "Get My Jira Tickets",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Check for Matches",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Activity",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get My Jira Tickets": {
+      "main": [
+        [
+          {
+            "node": "Summarize Available Tickets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Summarize Available Tickets": {
+      "main": [
+        [
+          {
+            "node": "Check for Matches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check for Matches": {
+      "main": [
+        [
+          {
+            "node": "Add Matched Work Comment",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Update Matched Ticket",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Matches Found",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "1",
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "id": "enhanced-timing-jira-workflow",
+  "tags": []
+} 
