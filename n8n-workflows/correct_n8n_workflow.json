@@ -1,0 +1,134 @@
+{
+  "name": "Timing App to Jira Workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 30
+            }
+          ]
+        }
+      },
+      "id": "cron-trigger",
+      "name": "Cron Trigger",
+      "type": "n8n-nodes-base.cron",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "command": "python3",
+        "arguments": "work_pattern_analyzer.py"
+      },
+      "id": "python-script",
+      "name": "Work Pattern Analyzer",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "has-activity",
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "has_activity",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "check-activity",
+      "name": "Check for Activity",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "message": "Work detected: {{ $json.work_summary }}"
+      },
+      "id": "log-activity",
+      "name": "Log Activity",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [900, 200]
+    },
+    {
+      "parameters": {
+        "message": "No recent work activity detected."
+      },
+      "id": "no-activity",
+      "name": "No Activity",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [900, 400]
+    }
+  ],
+  "connections": {
+    "Cron Trigger": {
+      "main": [
+        [
+          {
+            "node": "Work Pattern Analyzer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Work Pattern Analyzer": {
+      "main": [
+        [
+          {
+            "node": "Check for Activity",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check for Activity": {
+      "main": [
+        [
+          {
+            "node": "Log Activity",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Activity",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "1",
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "id": "timing-jira-workflow",
+  "tags": []
+} 
